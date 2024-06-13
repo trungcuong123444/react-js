@@ -1,0 +1,29 @@
+/* src/css/admin.css */
+.admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #05cd5f;
+    border: 1px solid #d72323;
+}
+
+.admin-section h3 {
+    margin-top: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #10a529;
+    background-color: #2aeb18;
+}
