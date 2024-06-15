@@ -1,0 +1,29 @@
+.checkproduct-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.checkproduct-container h2 {
+    margin-bottom: 20px;
+}
+
+.checkproduct-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px 0;
+}
+
+.checkproduct-container .buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkproduct-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}

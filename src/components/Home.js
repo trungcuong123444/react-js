@@ -31,6 +31,15 @@ const Home = () => {
         navigate("/register");
     };
 
+    // Navigation handlers for AddProduct and ListProduct
+    const handleNavigateToAddProduct = () => {
+        navigate("/addproduct");
+    };
+
+    const handleNavigateToListProduct = () => {
+        navigate("/listproduct");
+    };
+
     return (
         <div>
             <header>
@@ -38,11 +47,12 @@ const Home = () => {
                     <div className="container">
                         <h1>FUTUREPEDIA</h1>
                         <ul>
-                        {user && <p>Hello, {user.displayName || user.email}</p>}
-                        <li><button onClick={handleLogout}>Logout</button></li>
-                        {!user && <li><button onClick={handleLogout}>Login</button></li>}
-                        {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
-                       
+                            {user && <p>Hello, {user.displayName || user.email}</p>}
+                            <li><button onClick={handleLogout}>Logout</button></li>
+                            {!user && <li><button onClick={handleNavigateToRegister}>Login</button></li>}
+                            {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
+                            <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
+                            <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
                         </ul>
                     </div>
                 </nav>
@@ -51,7 +61,6 @@ const Home = () => {
             <section className="hero">
                 <div className="container">
                     <h2>FUTUREPEDIA</h2>
-                  
                     <p>Explore our latest products and exclusive deals.</p>
                     <button>Click Now</button>
                 </div>
