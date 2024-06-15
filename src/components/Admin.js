@@ -1,11 +1,12 @@
-// src/components/Admin.js
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 import "../css/admin.css";
 
 const Admin = () => {
     const [users, setUsers] = useState([]);
+    const navigate = useNavigate(); // Initialize the navigate function
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -36,6 +37,10 @@ const Admin = () => {
         }
     };
 
+    const handleCheckProduct = () => {
+        navigate("/checkproduct"); // Navigate to the Checkproduct page
+    };
+
     return (
         <div className="admin-container">
             <h2>Admin Dashboard</h2>
@@ -60,6 +65,7 @@ const Admin = () => {
                 <p>Total users: {users.length}</p>
                 {/* Add more statistical information as needed */}
             </div>
+            <button onClick={handleCheckProduct}>Go to Check Product</button> {/* New button */}
         </div>
     );
 };
