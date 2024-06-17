@@ -40,7 +40,9 @@ const Admin = () => {
     const handleCheckProduct = () => {
         navigate("/checkproduct"); // Navigate to the Checkproduct page
     };
-
+    const handleNavigateToListProduct = () => {
+        navigate("/listproduct");
+    };
     return (
         <div className="admin-container">
             <h2>Admin Dashboard</h2>
@@ -65,7 +67,8 @@ const Admin = () => {
                 <p>Total users: {users.length}</p>
                 {/* Add more statistical information as needed */}
             </div>
-            <button onClick={handleCheckProduct}>Go to Check Product</button> {/* New button */}
+            <button onClick={handleCheckProduct}>Go to Check Product</button>
+            <button onClick={handleNavigateToListProduct}>List Product</button>
         </div>
     );
 };
