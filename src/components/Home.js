@@ -39,25 +39,31 @@ const Home = () => {
     const handleNavigateToListProduct = () => {
         navigate("/userproduct");
     };
+    //
+    const handleNavigateToListFields = () => {
+        navigate("/listfields");
+    };
 
     return (
         <div>
-            <header>
-                <nav>
-                    <div className="container">
-                        <h1>FUTUREPEDIA</h1>
-                        <ul>
-                            {user && <p>Hello, {user.displayName || user.email}</p>}
-                            <li><button onClick={handleLogout}>Logout</button></li>
-                            {!user && <li><button onClick={handleNavigateToRegister}>Login</button></li>}
-                            {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
-                            <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
-                            <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
-                        </ul>
-                    </div>
-                </nav>
-            </header>
+        <header>
+            <nav>
+                <div className="container">
+                    <h1>FUTUREPEDIA</h1>
+                    <ul>
+                        {user && <p>Hello, {user.displayName || user.email}</p>}
+                        <li><button onClick={handleLogout}>Logout</button></li>
+                        {!user && <li><button onClick={handleNavigateToRegister}>Login</button></li>}
+                        {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
+                        <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
+                        <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
+                        <li><button className="list-fields-button" onClick={handleNavigateToListFields}>List Fields</button></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
 
+        <main className="main-content">
             <section className="hero">
                 <div className="container">
                     <h2>FUTUREPEDIA</h2>
@@ -86,13 +92,14 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+        </main>
 
-            <footer>
-                <div className="container">
-                    <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
-                </div>
-            </footer>
-        </div>
+        <footer>
+            <div className="container">
+                <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
     );
 };
 

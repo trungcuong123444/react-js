@@ -10,6 +10,8 @@ import ListProduct from "./components/ListProduct";
 import UserProduct from "./components/UserProduct";
 import UpdateProduct from "./components/UpdateProduct";
 
+import ListFields from "./components/ListFields";
+
 function App() {
   return (
     <Router>
@@ -23,6 +25,8 @@ function App() {
         <Route path="/userproduct" element={<UserProduct />} />
         <Route path="/updateproduct/:productId" element={<UpdateProduct />} />
         <Route path="/listproduct" element={<ListProduct />} />
+
+        <Route path="/listfields" element={<ListFields />} />
       </Routes>
     </Router>
   );
