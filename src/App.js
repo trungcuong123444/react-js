@@ -1,23 +1,33 @@
-// src/App.js
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./components/Home";
+import Admin from "./components/Admin";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Admin from "./components/Admin";
-import Home from "./components/Home";
+import AddProduct from "./components/Addproduct";
+import CheckProduct from "./components/Checkproduct";
+import ListProduct from "./components/ListProduct";
+import UserProduct from "./components/UserProduct";
+import UpdateProduct from "./components/UpdateProduct";
+import ProductDetails from "./components/ProductDetails"; // Nhập ProductDetails
 
-const App = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/" element={<Home />} />
-                <Route path="/admin" element={<Admin />} />
-                {/* Thêm route cho trang admin, sử dụng component Admin */}
-            </Routes>
-        </Router>
-    );
-};
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/addproduct" element={<AddProduct />} />
+        <Route path="/checkproduct" element={<CheckProduct />} />
+        <Route path="/userproduct" element={<UserProduct />} />
+        <Route path="/updateproduct/:productId" element={<UpdateProduct />} />
+        <Route path="/listproduct" element={<ListProduct />} />
+        <Route path="/productdetails/:productId" element={<ProductDetails />} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
