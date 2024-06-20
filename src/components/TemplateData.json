@@ -1,0 +1,31 @@
+[
+    {
+        "id": 1,
+        "category":"Desgin",
+        "image": "https://images.playground.com/6fc120f6833a4b258ec9828fe8a14bb6.jpeg",
+        "title": "ChatPlayground AI", 
+        "price": 335
+    },
+    {
+        "id": 2,
+        "category":"video",
+        "image": "https://images.playground.com/329c5df972314980aa06d99743d956b8.jpeg",
+        "title": "DiveDeck.AI",
+        "price": 450
+    },
+    {
+        "id": 3,
+        "category":"Marketing",
+        "image": "https://images.playground.com/1ae94e5df6144ebf9b4e46732af5a086.jpeg",
+        "title": "MimicPC",
+        "price": 200
+    },
+    {
+        "id": 4,
+        "category":"Productivity",
+        "image": "https://images.playground.com/66ca1337bbac419bb7cc2da4a9950ae5.jpeg",
+        "title": "Humata AI",
+        "price": 200
+    }
+        
+]

@@ -4,9 +4,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+<<<<<<< HEAD
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+=======
+>>>>>>> 8a39b9b18a971da16d523ea362d6bf9813e52845
 }
 
 .container {
@@ -20,6 +23,7 @@ header {
     padding: 10px 0;
 }
 
+<<<<<<< HEAD
 header nav {
     display: flex;
     justify-content: center; /* Căn các nút ra giữa */
@@ -31,12 +35,19 @@ header nav ul {
     align-items: center; /* Căn các phần tử theo chiều dọc vào giữa */
     margin: 0;
     padding: 0;
+=======
+header nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end;
+>>>>>>> 8a39b9b18a971da16d523ea362d6bf9813e52845
 }
 
 header nav ul li {
     margin-left: 20px;
 }
 
+<<<<<<< HEAD
 header nav ul li button {
     background-color: transparent; /* Xoá nền của nút */
     color: #181717;
@@ -59,6 +70,8 @@ header nav ul li .list-fields-button:hover {
     background-color: #0056b3;
 }
 
+=======
+>>>>>>> 8a39b9b18a971da16d523ea362d6bf9813e52845
 .user-info {
     display: flex;
     align-items: center;
@@ -86,11 +99,14 @@ header nav ul li .list-fields-button:hover {
     cursor: pointer;
 }
 
+<<<<<<< HEAD
 .main-content {
     flex: 1;
     padding: 50px 0;
 }
 
+=======
+>>>>>>> 8a39b9b18a971da16d523ea362d6bf9813e52845
 .products {
     padding: 50px 0;
 }
@@ -139,7 +155,64 @@ header nav ul li .list-fields-button:hover {
 
 footer {
     background-color: #333;
+<<<<<<< HEAD
     color: #fff;
     text-align: center;
     padding: 10px 0;
 }
+=======
+    color: #f2ecec;
+    text-align: center;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 0;  
+    width: 100%;
+    opacity: 0.5;
+}
+body{
+    background-color: rgb(239, 233, 233);
+}
+.templateContainer{
+    margin: 5% 0;
+}
+.templateContainer > .searchInput_Container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.templateContainer > .searchInput_Container input{
+    background-color: rgb(238, 243, 245);
+    border: 5px solid #7accf5;
+    width: 50%;
+    padding: 8px;
+    border-radius: 2%;
+    outline: none;
+}
+.templateContainer .template_Container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.templateContainer .template_Container .template{
+    background-color: rgb(244, 247, 249);
+    margin: 30px;
+    padding: 0px 20px;
+}
+.templateContainer .template_Container .template img{
+    height: 250px;
+}
+.buttonContainer {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    gap: 10px; /* Khoảng cách giữa các nút */
+    flex-wrap: wrap; /* Cho phép các nút xuống dòng nếu không đủ chỗ */
+    margin: 20px 0; /* Khoảng cách trên và dưới cho container của nút */
+  }
+  
+  .btn {
+    background-color: rgb(197, 237, 245);
+    margin: 5px;
+  }
+>>>>>>> 8a39b9b18a971da16d523ea362d6bf9813e52845
