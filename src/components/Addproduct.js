@@ -33,6 +33,7 @@ const AddProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
             let imageUrl = "";
             if (image) {
@@ -44,27 +45,21 @@ const AddProduct = () => {
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
-                    catalogs: selectedCatalogs.map(cat => cat.value), // Save selected catalog IDs
+                    catalogs: selectedCatalogs.map(cat => cat.value), 
                     imageUrl,
                     tags: tags.split(","),
                     link,
-                    status: "pending",
+                    status: "pending", // Initial status
                     createdAt: new Date(),
-                    uid: user.uid,
+                    uid: user.uid, // Save the user's UID
                 });
 
-                setMessage("Product added successfully. Awaiting approval.");
-                setSelectedCatalogs([]); // Reset selected catalogs
-                setName("");
-                setDescription("");
-                setTags("");
-                setLink("");
-                setImage(null);
+                setMessage("Bạn đã đề nghị thêm sản phẩm thành công. Xin đợi xét duyệt.");
             } else {
                 setMessage("User is not logged in");
             }
         } catch (error) {
-            setMessage("An error occurred. Please try again.");
+            setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
 
