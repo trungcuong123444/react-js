@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../firebaseConfig";
 import { useNavigate, useLocation } from "react-router-dom";
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, getDocs, doc, updateDoc } from "firebase/firestore";
 import "../css/Home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,6 @@ const Home = () => {
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [filterCategory, setFilterCategory] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
     const [message, setMessage] = useState("");
     const [rating, setRating] = useState(0); // State to store rating
 
@@ -68,10 +67,6 @@ const Home = () => {
         navigate("/userproduct");
     };
 
-    const handleNavigateToListFields = () => {
-        navigate("/listfields");
-    };
-
     const handleFilterCategory = (category) => {
         setFilterCategory(category);
         if (category === "") {
@@ -82,17 +77,8 @@ const Home = () => {
         }
     };
 
-    const handleSearch = () => {
-        const searchTermLower = searchTerm.toLowerCase();
-        const filtered = products.filter(product =>
-            product.name.toLowerCase().includes(searchTermLower)
-        );
-        setFilteredProducts(filtered);
-    };
-
     const clearFilters = () => {
         setFilterCategory("");
-        setSearchTerm("");
         setFilteredProducts(products);
     };
 
@@ -127,7 +113,6 @@ const Home = () => {
                                     <li><button onClick={handleLogout}>Logout</button></li>
                                     <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
                                     <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
-                                    <li><button className="list-fields-button" onClick={handleNavigateToListFields}>List Fields</button></li>
                                 </>
                             ) : (
                                 <>
@@ -149,21 +134,7 @@ const Home = () => {
                     </div>
                 </section>
 
-                <section className="filters">
-                    <div className="container">
-                        <h2>Filters</h2>
-                        <div>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <button onClick={handleSearch}>Search</button>
-                            <button onClick={clearFilters}>Clear Filters</button>
-                        </div>
-                    </div>
-                </section>
+               
 
                 <section className="user-products">
                     <div className="container">
