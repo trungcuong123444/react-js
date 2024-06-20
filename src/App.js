@@ -9,28 +9,33 @@ import CheckProduct from "./components/Checkproduct";
 import ListProduct from "./components/ListProduct";
 import UserProduct from "./components/UserProduct";
 import UpdateProduct from "./components/UpdateProduct";
+import AddCatalog from "./components/AddCatalog";
+import MainLayout from "./components/MainLayout";
 
-import ListFields from "./components/ListFields";
-
-function App() {
+const App = () => {
   return (
-    <Router>
+      <Router>
+          <Routes>
+              <Route path="/" element={<MainLayout />}>
+                  <Route path="add-product" element={<AddProduct />} />
+                  <Route path="add-catalog" element={<AddCatalog />} />
+                  <Route path="user-products" element={<UserProduct />} />
+              </Route>
+          </Routes>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/addproduct" element={<AddProduct />} />
-        <Route path="/checkproduct" element={<CheckProduct />} />
-        <Route path="/userproduct" element={<UserProduct />} />
+        <Route path="/checkproduct" element={<CheckProduct />} />     
         <Route path="/updateproduct/:productId" element={<UpdateProduct />} />
         <Route path="/listproduct" element={<ListProduct />} />
-
-        <Route path="/listfields" element={<ListFields />} />
       </Routes>
-    </Router>
+      </Router>
   );
-}
+};
+
+
 
 export default App;
 

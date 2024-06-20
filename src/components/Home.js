@@ -39,10 +39,7 @@ const Home = () => {
     const handleNavigateToListProduct = () => {
         navigate("/userproduct");
     };
-    //
-    const handleNavigateToListFields = () => {
-        navigate("/listfields");
-    };
+   
 
     return (
         <div>
@@ -57,7 +54,6 @@ const Home = () => {
                         {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
                         <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
                         <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
-                        <li><button className="list-fields-button" onClick={handleNavigateToListFields}>List Fields</button></li>
                     </ul>
                 </div>
             </nav>
@@ -88,7 +84,7 @@ const Home = () => {
                             <p>$79.99</p>
                             <button>Add to Cart</button>
                         </div>
-                        {/* Add more products as needed */}
+                       
                     </div>
                 </div>
             </section>

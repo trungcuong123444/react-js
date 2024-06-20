@@ -1,20 +1,29 @@
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig"; // Make sure to export storage from firebaseConfig
+import { db, storage, auth } from "../firebaseConfig"; // Ensure you have storage exported from firebaseConfig
 import { useNavigate } from "react-router-dom";
 import { MultiSelect } from "react-multi-select-component";
 
 const AddProduct = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [categories, setCategories] = useState([]);
-    const [otherCategory, setOtherCategory] = useState("");
+    const [catalogs, setCatalogs] = useState([]);
+    const [selectedCatalogs, setSelectedCatalogs] = useState([]);
     const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchCatalogs = async () => {
+            const querySnapshot = await getDocs(collection(db, "catalogs"));
+            const catalogsList = querySnapshot.docs.map(doc => ({ label: doc.data().name, value: doc.id }));
+            setCatalogs(catalogsList);
+        };
+        fetchCatalogs();
+    }, []);
 
     const handleImageUpload = async (file) => {
         const storageRef = ref(storage, `images/${file.name}`);
@@ -24,32 +33,28 @@ const AddProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             let imageUrl = "";
             if (image) {
                 imageUrl = await handleImageUpload(image);
             }
 
-            const selectedCategories = otherCategory ? [...categories.map(cat => cat.value), otherCategory] : categories.map(cat => cat.value);
-
             const user = auth.currentUser;
             if (user) {
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
-                    categories: selectedCategories, // Changed 'category' to 'categories'
+                    catalogs: selectedCatalogs.map(cat => cat.value), // Save selected catalog IDs
                     imageUrl,
                     tags: tags.split(","),
                     link,
-                    status: "pending", // Initial status
+                    status: "pending",
                     createdAt: new Date(),
-                    uid: user.uid, // Save the user's UID
+                    uid: user.uid,
                 });
 
-                setMessage("Bạn đã đề nghị thêm sản phẩm thành công. Xin đợi xét duyệt.");
-                setCategories([]); // Reset categories
-                setOtherCategory(""); // Reset other category
+                setMessage("Product added successfully. Awaiting approval.");
+                setSelectedCatalogs([]); // Reset selected catalogs
                 setName("");
                 setDescription("");
                 setTags("");
@@ -59,20 +64,9 @@ const AddProduct = () => {
                 setMessage("User is not logged in");
             }
         } catch (error) {
-            setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
+            setMessage("An error occurred. Please try again.");
         }
     };
-
-    const options = [
-        { label: "Natural Language Processing", value: "Natural Language Processing" },
-        { label: "Computer Vision", value: "Computer Vision" },
-        { label: "Robotics", value: "Robotics" },
-        { label: "Reinforcement Learning", value: "Reinforcement Learning" },
-        { label: "Generative Models", value: "Generative Models" },
-        { label: "Data Science", value: "Data Science" },
-        { label: "AI Ethics", value: "AI Ethics" },
-        { label: "Other", value: "Other" }
-    ];
 
     return (
         <div className="auth-container">
@@ -92,21 +86,12 @@ const AddProduct = () => {
                     required
                 />
                 <MultiSelect
-                    options={options}
-                    value={categories}
-                    onChange={setCategories}
-                    labelledBy="Select Categories"
+                    options={catalogs}
+                    value={selectedCatalogs}
+                    onChange={setSelectedCatalogs}
+                    labelledBy="Select Catalogs"
                     hasSelectAll={false}
                 />
-                {categories.some(category => category.value === "Other") && (
-                    <input
-                        type="text"
-                        placeholder="Please specify"
-                        value={otherCategory}
-                        onChange={(e) => setOtherCategory(e.target.value)}
-                        required
-                    />
-                )}
                 <input
                     type="file"
                     accept="image/png, image/jpeg"
