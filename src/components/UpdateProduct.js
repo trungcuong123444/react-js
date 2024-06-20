@@ -3,16 +3,19 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebaseConfig";
 import { useParams, useNavigate } from "react-router-dom";
+import { MultiSelect } from "react-multi-select-component";
 
 const UpdateProduct = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [otherCategory, setOtherCategory] = useState("");
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
     const [image, setImage] = useState(null);
+    const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,7 +28,7 @@ const UpdateProduct = () => {
                 setProduct(productData);
                 setName(productData.name);
                 setDescription(productData.description);
-                setCategory(productData.category);
+                setCategories(productData.categories.map(category => ({ label: category, value: category })));
                 setTags(productData.tags.join(", "));
                 setLink(productData.link);
             }
@@ -42,33 +45,52 @@ const UpdateProduct = () => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-
+    
         try {
             let imageUrl = product.imageUrl;
             if (image) {
                 imageUrl = await handleImageUpload(image);
             }
-
+    
             const productRef = doc(db, "products", productId);
             await updateDoc(productRef, {
                 name,
                 description,
-                category,
+                categories: categories.map(cat => cat.value),
                 imageUrl,
                 tags: tags.split(","),
                 link,
                 updatedAt: new Date(),
             });
-
-            navigate("/userproducts"); // Chuyển hướng về trang UserProduct sau khi cập nhật thành công
+    
+            setMessage("Update thành công"); // Set thông báo sau khi cập nhật thành công
+    
+            // Chuyển hướng về trang UserProduct sau khi cập nhật thành công
+            setTimeout(() => {
+                navigate("/userproduct");
+            }, 1000); // Chuyển hướng sau 1 giây
+    
         } catch (error) {
             console.error("Error updating document: ", error);
+            setMessage("Đã xảy ra lỗi. Vui lòng thử lại.");
         }
     };
+    
 
     if (!product) {
         return <p>Loading...</p>;
     }
+
+    const options = [
+        { label: "Natural Language Processing", value: "Natural Language Processing" },
+        { label: "Computer Vision", value: "Computer Vision" },
+        { label: "Robotics", value: "Robotics" },
+        { label: "Reinforcement Learning", value: "Reinforcement Learning" },
+        { label: "Generative Models", value: "Generative Models" },
+        { label: "Data Science", value: "Data Science" },
+        { label: "AI Ethics", value: "AI Ethics" },
+        { label: "Other", value: "Other" }
+    ];
 
     return (
         <div className="auth-container">
@@ -87,13 +109,22 @@ const UpdateProduct = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
+                <MultiSelect
+                    options={options}
+                    value={categories}
+                    onChange={setCategories}
+                    labelledBy="Select Categories"
+                    hasSelectAll={false}
                 />
+                {categories.some(category => category.value === "Other") && (
+                    <input
+                        type="text"
+                        placeholder="Please specify"
+                        value={otherCategory}
+                        onChange={(e) => setOtherCategory(e.target.value)}
+                        required
+                    />
+                )}
                 <input
                     type="file"
                     accept="image/png, image/jpeg"
@@ -114,6 +145,7 @@ const UpdateProduct = () => {
                 />
                 <button type="submit">Update</button>
             </form>
+            {message && <p>{message}</p>}
         </div>
     );
 };
