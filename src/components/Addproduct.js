@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig"; // Make sure to export storage from firebaseConfig
+import { db, storage, auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
@@ -11,6 +11,7 @@ const AddProduct = () => {
     const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
+    const [rating, setRating] = useState(0);
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
@@ -36,11 +37,12 @@ const AddProduct = () => {
                     description,
                     category,
                     imageUrl,
-                    tags: tags.split(","),
+                    tags: tags.split(",").map(tag => tag.trim()),
                     link,
-                    status: "pending", // Initial status
+                    rating,
+                    status: "pending",
                     createdAt: new Date(),
-                    uid: user.uid, // Save the user's UID
+                    uid: user.uid,
                 });
 
                 setMessage("Bạn đã đề nghị thêm sản phẩm thành công. Xin đợi xét duyệt.");
@@ -48,30 +50,47 @@ const AddProduct = () => {
                 setMessage("User is not logged in");
             }
         } catch (error) {
+            console.error("Error adding product: ", error);
             setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
 
+    const fetchUserProducts = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const q = query(collection(db, "products"), where("uid", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            return products;
+        }
+        return [];
+    };
+
+    const handleShowProducts = async () => {
+        const products = await fetchUserProducts();
+        navigate("/", { state: { products } });
+    };
+
     return (
         <div className="auth-container">
-            <h2>Add Product</h2>
+            <h2>Thêm Sản Phẩm</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Tên sản phẩm"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
                 <textarea
-                    placeholder="Description"
+                    placeholder="Mô tả"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
                 <input
                     type="text"
-                    placeholder="Category"
+                    placeholder="Danh mục"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     required
@@ -83,20 +102,30 @@ const AddProduct = () => {
                 />
                 <input
                     type="text"
-                    placeholder="Tags (comma separated)"
+                    placeholder="Tags (phân tách bằng dấu phẩy)"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                 />
                 <input
                     type="text"
-                    placeholder="Product Link"
+                    placeholder="Liên kết sản phẩm"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
-                <button type="submit">Create</button>
+                <input
+                    type="number"
+                    placeholder="Đánh giá (từ 1 đến 5)"
+                    value={rating}
+                    onChange={(e) => setRating(parseInt(e.target.value))}
+                    min="1"
+                    max="5"
+                    required
+                />
+                <button type="submit">Tạo</button>
             </form>
             {message && <p>{message}</p>}
+            <button onClick={handleShowProducts}>Hiển thị Sản phẩm của tôi</button>
         </div>
     );
 };

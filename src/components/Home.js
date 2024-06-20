@@ -1,26 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebaseConfig";
-import { useNavigate } from "react-router-dom";
+import { db, auth } from "../firebaseConfig";
+import { useNavigate, useLocation } from "react-router-dom";
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import "../css/Home.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null); // State để lưu thông tin người dùng
+    const location = useLocation();
+    const [user, setUser] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [filterCategory, setFilterCategory] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [message, setMessage] = useState("");
+    const [rating, setRating] = useState(0); // State to store rating
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        setFilteredProducts(products);
+    }, [products]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
-                // Nếu có người dùng đăng nhập, lưu thông tin vào state
                 setUser(currentUser);
             } else {
-                // Nếu không có người dùng đăng nhập, reset state
                 setUser(null);
             }
         });
 
-        return () => unsubscribe(); // Cleanup function
+        return () => unsubscribe();
     }, []);
+
+    const fetchProducts = async () => {
+        try {
+            const productsCollection = collection(db, "products");
+            const q = query(productsCollection);
+
+            const querySnapshot = await getDocs(q);
+            const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProducts(productsData);
+        } catch (error) {
+            console.error("Error fetching products: ", error);
+        }
+    };
 
     const handleLogout = async () => {
         await signOut(auth);
@@ -31,7 +60,6 @@ const Home = () => {
         navigate("/register");
     };
 
-    // Navigation handlers for AddProduct and ListProduct
     const handleNavigateToAddProduct = () => {
         navigate("/addproduct");
     };
@@ -39,67 +67,143 @@ const Home = () => {
     const handleNavigateToListProduct = () => {
         navigate("/userproduct");
     };
-    //
+
     const handleNavigateToListFields = () => {
         navigate("/listfields");
     };
 
+    const handleFilterCategory = (category) => {
+        setFilterCategory(category);
+        if (category === "") {
+            setFilteredProducts(products);
+        } else {
+            const filtered = products.filter(product => product.category === category);
+            setFilteredProducts(filtered);
+        }
+    };
+
+    const handleSearch = () => {
+        const searchTermLower = searchTerm.toLowerCase();
+        const filtered = products.filter(product =>
+            product.name.toLowerCase().includes(searchTermLower)
+        );
+        setFilteredProducts(filtered);
+    };
+
+    const clearFilters = () => {
+        setFilterCategory("");
+        setSearchTerm("");
+        setFilteredProducts(products);
+    };
+
+    const handleRateProduct = async (productId) => {
+        try {
+            if (rating === 0) {
+                setMessage("Vui lòng chọn số sao trước khi đánh giá.");
+                return;
+            }
+
+            // Update Firestore with rating
+            const productRef = doc(db, "products", productId);
+            await updateDoc(productRef, { rating });
+
+            setMessage(`Bạn đã đánh giá sản phẩm ${productId} thành công với ${rating} sao.`);
+        } catch (error) {
+            console.error("Error rating product:", error);
+            setMessage(`Đã xảy ra lỗi khi đánh giá sản phẩm.`);
+        }
+    };
+
     return (
         <div>
-        <header>
-            <nav>
-                <div className="container">
-                    <h1>FUTUREPEDIA</h1>
-                    <ul>
-                        {user && <p>Hello, {user.displayName || user.email}</p>}
-                        <li><button onClick={handleLogout}>Logout</button></li>
-                        {!user && <li><button onClick={handleNavigateToRegister}>Login</button></li>}
-                        {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
-                        <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
-                        <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
-                        <li><button className="list-fields-button" onClick={handleNavigateToListFields}>List Fields</button></li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
-
-        <main className="main-content">
-            <section className="hero">
-                <div className="container">
-                    <h2>FUTUREPEDIA</h2>
-                    <p>Explore our latest products and exclusive deals.</p>
-                    <button>Click Now</button>
-                </div>
-            </section>
-
-            <section className="products">
-                <div className="container">
-                    <h2>Featured Products</h2>
-                    <div className="product-list">
-                        <div className="product">
-                            <img src="https://via.placeholder.com/150" alt="Product" />
-                            <h3>Product Name</h3>
-                            <p>$99.99</p>
-                            <button>Add to Cart</button>
-                        </div>
-                        <div className="product">
-                            <img src="https://via.placeholder.com/150" alt="Product" />
-                            <h3>Product Name</h3>
-                            <p>$79.99</p>
-                            <button>Add to Cart</button>
-                        </div>
-                        {/* Add more products as needed */}
+            <header>
+                <nav>
+                    <div className="container">
+                        <h1>FUTUREPEDIA</h1>
+                        <ul>
+                            {user && <li><p>Hello, {user.displayName || user.email}</p></li>}
+                            {user ? (
+                                <>
+                                    <li><button onClick={handleLogout}>Logout</button></li>
+                                    <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
+                                    <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
+                                    <li><button className="list-fields-button" onClick={handleNavigateToListFields}>List Fields</button></li>
+                                </>
+                            ) : (
+                                <>
+                                    <li><button onClick={handleNavigateToRegister}>Login</button></li>
+                                    <li><button onClick={handleNavigateToRegister}>Register</button></li>
+                                </>
+                            )}
+                        </ul>
                     </div>
-                </div>
-            </section>
-        </main>
+                </nav>
+            </header>
 
-        <footer>
-            <div className="container">
-                <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
+            <main className="main-content">
+                <section className="hero">
+                    <div className="container">
+                        <h2>FUTUREPEDIA</h2>
+                        <p>Explore our latest products and exclusive deals.</p>
+                        <button>Click Now</button>
+                    </div>
+                </section>
+
+                <section className="filters">
+                    <div className="container">
+                        <h2>Filters</h2>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <button onClick={handleSearch}>Search</button>
+                            <button onClick={clearFilters}>Clear Filters</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="user-products">
+                    <div className="container">
+                        {filteredProducts.length > 0 ? (
+                            <div>
+                                <h3>Sản phẩm của tôi</h3>
+                                <ul>
+                                    {filteredProducts.map(product => (
+                                        <li key={product.id}>
+                                            <h4>{product.name}</h4>
+                                            <p>{product.description}</p>
+                                            {product.imageUrl && <img src={product.imageUrl} alt={product.name} style={{ width: "100px" }} />}
+                                            <p>Danh mục: {product.category}</p>
+                                            <p>Tags: {product.tags.join(", ")}</p>
+                                            <p><a href={product.link}>Liên kết sản phẩm</a></p>
+                                            <div>
+                                                <p>Đánh giá: </p>
+                                                {[...Array(product.rating)].map((star, i) => (
+                                                    <FontAwesomeIcon icon={faStar} key={i} />
+                                                ))}
+                                               
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p>Không có sản phẩm nào.</p>
+                        )}
+                    </div>
+                </section>
+            </main>
+
+            <footer>
+                <div className="container">
+                    <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
+                </div>
+            </footer>
+            {message && <p>{message}</p>}
+        </div>
     );
 };
 
