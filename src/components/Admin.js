@@ -6,6 +6,8 @@ import "../css/admin.css";
 
 const Admin = () => {
     const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterRole, setFilterRole] = useState("");
     const navigate = useNavigate(); // Initialize the navigate function
 
     useEffect(() => {
@@ -40,16 +42,42 @@ const Admin = () => {
     const handleCheckProduct = () => {
         navigate("/checkproduct"); // Navigate to the Checkproduct page
     };
+
     const handleNavigateToListProduct = () => {
         navigate("/listproduct");
     };
+
+    const handleNavigateToAddProduct = () => {
+        navigate("/addproduct");
+    };
+
+    const filteredUsers = users
+        .filter((user) =>
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .filter((user) => (filterRole ? user.role === filterRole : true));
+
     return (
         <div className="admin-container">
             <h2>Admin Dashboard</h2>
+            <div className="admin-actions">
+                <input
+                    type="text"
+                    placeholder="Search by email or name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <select onChange={(e) => setFilterRole(e.target.value)} value={filterRole}>
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
             <div className="admin-section">
                 <h3>User List</h3>
                 <ul>
-                    {users.map((user) => (
+                    {filteredUsers.map((user) => (
                         <li key={user.id}>
                             <p>ID: {user.id}</p>
                             <p>Email: {user.email}</p>
@@ -69,6 +97,7 @@ const Admin = () => {
             </div>
             <button onClick={handleCheckProduct}>Go to Check Product</button>
             <button onClick={handleNavigateToListProduct}>List Product</button>
+            <button onClick={handleNavigateToAddProduct}>Add Product</button>
         </div>
     );
 };

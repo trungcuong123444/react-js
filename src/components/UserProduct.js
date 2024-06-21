@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +30,14 @@ const UserProduct = () => {
         navigate(`/updateproduct/${productId}`);
     };
 
+    const handleDisplayOnHome = async (productId, display) => {
+        const productRef = doc(db, "products", productId);
+        await updateDoc(productRef, { displayOnHome: display });
+        setProducts(products.map(product => 
+            product.id === productId ? { ...product, displayOnHome: display } : product
+        ));
+    };
+
     return (
         <div className="auth-container">
             <h2>Your Products</h2>
@@ -44,6 +52,8 @@ const UserProduct = () => {
                         <p>Link: <a href={product.link} target="_blank" rel="noopener noreferrer">{product.link}</a></p>
                         <button onClick={() => handleUpdate(product.id)}>Update</button>
                         <button onClick={() => handleDelete(product.id)}>Delete</button>
+                        <button onClick={() => handleDisplayOnHome(product.id, true)}>Display</button>
+                        {product.displayOnHome && <button onClick={() => handleDisplayOnHome(product.id, false)}>Remove from Home</button>}
                     </li>
                 ))}
             </ul>

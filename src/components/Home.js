@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { db, auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { useNavigate, useLocation } from "react-router-dom";
-import { collection, query, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, getDocs, doc, updateDoc, where } from "firebase/firestore";
 import "../css/Home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -15,15 +15,7 @@ const Home = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [filterCategory, setFilterCategory] = useState("");
     const [message, setMessage] = useState("");
-    const [rating, setRating] = useState(0); // State to store rating
-
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-
-    useEffect(() => {
-        setFilteredProducts(products);
-    }, [products]);
+    const [rating, setRating] = useState(0);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -37,10 +29,18 @@ const Home = () => {
         return () => unsubscribe();
     }, []);
 
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        setFilteredProducts(products);
+    }, [products]);
+
     const fetchProducts = async () => {
         try {
             const productsCollection = collection(db, "products");
-            const q = query(productsCollection);
+            const q = query(productsCollection, where("displayOnHome", "==", true));
 
             const querySnapshot = await getDocs(q);
             const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -100,6 +100,10 @@ const Home = () => {
         }
     };
 
+    const handleNavigateToDetails = (productId) => {
+        navigate(`/productdetails/${productId}`);
+    };
+
     return (
         <div>
             <header>
@@ -134,7 +138,25 @@ const Home = () => {
                     </div>
                 </section>
 
-               
+                <section className="products">
+                    <div className="container">
+                        <h2>Featured Products</h2>
+                        <div className="product-list">
+                            {products.length > 0 ? (
+                                products.map(product => (
+                                    <div className="product" key={product.id}>
+                                        <img src={product.imageUrl} alt={product.name} />
+                                        <h3>{product.name}</h3>
+                                        <p>{product.description}</p>
+                                        <button onClick={() => handleNavigateToDetails(product.id)}>Details</button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No approved products available</p>
+                            )}
+                        </div>
+                    </div>
+                </section>
 
                 <section className="user-products">
                     <div className="container">
@@ -155,7 +177,6 @@ const Home = () => {
                                                 {[...Array(product.rating)].map((star, i) => (
                                                     <FontAwesomeIcon icon={faStar} key={i} />
                                                 ))}
-                                               
                                             </div>
                                         </li>
                                     ))}

@@ -6,11 +6,12 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AddProduct from "./components/Addproduct";
 import CheckProduct from "./components/Checkproduct";
+
 import ListProduct from "./components/ListProduct";
 import UserProduct from "./components/UserProduct";
 import UpdateProduct from "./components/UpdateProduct";
 
-
+import ProductDetails from "./components/ProductDetails"; // Nhập ProductDetails
 
 function App() {
   return (
@@ -26,11 +27,12 @@ function App() {
         <Route path="/updateproduct/:productId" element={<UpdateProduct />} />
         <Route path="/listproduct" element={<ListProduct />} />
 
-    
+        <Route path="/productdetails/:productId" element={<ProductDetails />} />
+
+
       </Routes>
     </Router>
   );
 }
 
 export default App;
-

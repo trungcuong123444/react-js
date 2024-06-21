@@ -1,8 +1,9 @@
+//src\components\Addproduct.js
 import React, { useState } from "react";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../firebaseConfig";
-import { useNavigate } from "react-router-dom";
+
 
 const AddProduct = () => {
     const [name, setName] = useState("");
@@ -11,9 +12,8 @@ const AddProduct = () => {
     const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
-    const [rating, setRating] = useState(0);
     const [message, setMessage] = useState("");
-    const navigate = useNavigate();
+    
 
     const handleImageUpload = async (file) => {
         const storageRef = ref(storage, `images/${file.name}`);
@@ -32,65 +32,49 @@ const AddProduct = () => {
 
             const user = auth.currentUser;
             if (user) {
+                const isAdmin = user.email === "admin@gmail.com" && user.password === "123456"; // This line assumes you have access to the password directly which is not recommended
+
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
                     category,
                     imageUrl,
-                    tags: tags.split(",").map(tag => tag.trim()),
+                    tags: tags.split(","),
                     link,
-                    rating,
-                    status: "pending",
+                    status: isAdmin ? "approved" : "pending", // Set status based on admin check
                     createdAt: new Date(),
-                    uid: user.uid,
+                    uid: user.uid, // Save the user's UID
                 });
 
-                setMessage("Bạn đã đề nghị thêm sản phẩm thành công. Xin đợi xét duyệt.");
+                setMessage("Bạn đã đề nghị thêm sản phẩm thành công.");
             } else {
                 setMessage("User is not logged in");
             }
         } catch (error) {
-            console.error("Error adding product: ", error);
             setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
     };
 
-    const fetchUserProducts = async () => {
-        const user = auth.currentUser;
-        if (user) {
-            const q = query(collection(db, "products"), where("uid", "==", user.uid));
-            const querySnapshot = await getDocs(q);
-            const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            return products;
-        }
-        return [];
-    };
-
-    const handleShowProducts = async () => {
-        const products = await fetchUserProducts();
-        navigate("/", { state: { products } });
-    };
-
     return (
         <div className="auth-container">
-            <h2>Thêm Sản Phẩm</h2>
+            <h2>Add Product</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Tên sản phẩm"
+                    placeholder="Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
                 <textarea
-                    placeholder="Mô tả"
+                    placeholder="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
                 <input
                     type="text"
-                    placeholder="Danh mục"
+                    placeholder="Category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     required
@@ -102,30 +86,20 @@ const AddProduct = () => {
                 />
                 <input
                     type="text"
-                    placeholder="Tags (phân tách bằng dấu phẩy)"
+                    placeholder="Tags (comma separated)"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                 />
                 <input
                     type="text"
-                    placeholder="Liên kết sản phẩm"
+                    placeholder="Product Link"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
-                <input
-                    type="number"
-                    placeholder="Đánh giá (từ 1 đến 5)"
-                    value={rating}
-                    onChange={(e) => setRating(parseInt(e.target.value))}
-                    min="1"
-                    max="5"
-                    required
-                />
-                <button type="submit">Tạo</button>
+                <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
-            <button onClick={handleShowProducts}>Hiển thị Sản phẩm của tôi</button>
         </div>
     );
 };
