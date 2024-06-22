@@ -185,49 +185,80 @@ const Home = () => {
                 <div className="product-list">
                     {/* Product List or My Product List rendering based on `view` */}
                     {view ? (
-                        filteredProducts.length > 0 ? (
-                            <div className="product-list">
-                                {filteredProducts.map(product => (
-                                    <div className="product" key={product.id}>
-                                        <img src={product.imageUrl} alt={product.name} />
-                                        <h3>{product.name}</h3>
-                                        <p>{product.description}</p>
-                                        <button className="details-button" onClick={() => handleNavigateToDetails(product.id)}>Details</button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p>No products available</p>
-                        )
-                    ) : (
-                        filteredProducts.length > 0 ? (
-                            <ul className="my-product-list">
-                                {filteredProducts.map(product => (
-                                    <li key={product.id}>
-                                        <h4>{product.name}</h4>
-                                        <p>{product.description}</p>
-                                        {product.imageUrl && (
-                                            <img src={product.imageUrl} alt={product.name} style={{ width: "100px" }} />
-                                        )}
-                                        <p>Category: {product.category}</p>
-                                        <p>Tags: {product.tags.join(", ")}</p>
-                                        <p><a href={product.link}>Product Link</a></p>
-                                        <div className="ratings">
-                                            <p>Rating: </p>
-                                            {[...Array(product.rating)].map((_, i) => (
-                                                <FontAwesomeIcon icon={faStar} key={i} />
-                                            ))}
-                                            <Link to={`/product/${product.id}/review`} className="review-button">
-                                                {product.numReviews} Reviews
-                                            </Link>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No products available</p>
-                        )
+    // Render danh sách sản phẩm
+    filteredProducts.length > 0 ? (
+        <div className="product-list">
+            {filteredProducts.map(product => (
+                <div className="product" key={product.id}>
+                    <img src={product.imageUrl} alt={product.name} />
+                    <div className="product-details-vertical">
+                        <h3>{product.name}</h3>
+                        <p>Description: {product.description}</p>
+                        <p>Category: {product.category}</p>
+                        <p>Tags: {product.tags.join(", ")}</p>
+                        <p>
+                            <a href={product.link} target="_blank" rel="noopener noreferrer">
+                                Product Link
+                            </a>
+                        </p>
+                        <div className="ratings">
+                            <p>Rating: </p>
+                            {[...Array(product.rating)].map((_, i) => (
+                                <FontAwesomeIcon icon={faStar} key={i} />
+                            ))}
+                            <Link to={`/product/${product.id}/review`} className="review-button">
+                                {product.numReviews} Reviews
+                            </Link>
+                        </div>
+                        <button className="details-button" onClick={() => handleNavigateToDetails(product.id)}>
+                            Details
+                        </button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    ) : (
+        <p>No products available</p>
+    )
+) : (
+    // Render danh sách sản phẩm người dùng
+    filteredProducts.length > 0 ? (
+        <ul className="my-product-list">
+            {filteredProducts.map(product => (
+                <li key={product.id}>
+                    <h4>{product.name}</h4>
+                    <p>Description: {product.description}</p>
+                    {product.imageUrl && (
+                        <img src={product.imageUrl} alt={product.name} style={{ width: "100px" }} />
                     )}
+                    <p>Category: {product.category}</p>
+                    <p>Tags: {product.tags.join(", ")}</p>
+                    <p>
+                        <a href={product.link} target="_blank" rel="noopener noreferrer">
+                            Product Link
+                        </a>
+                    </p>
+                    <div className="ratings">
+                        <p>Rating: </p>
+                        {[...Array(product.rating)].map((_, i) => (
+                            <FontAwesomeIcon icon={faStar} key={i} />
+                        ))}
+                        <Link to={`/product/${product.id}/review`} className="review-button">
+                            {product.numReviews} Reviews
+                        </Link>
+                    </div>
+                    <button className="details-button" onClick={() => handleNavigateToDetails(product.id)}>
+                        Details
+                    </button>
+                </li>
+            ))}
+        </ul>
+    ) : (
+        <p>No products available</p>
+    )
+)}
+
+
                 </div>
             </main>
 

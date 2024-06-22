@@ -114,6 +114,8 @@ const UserProduct = () => {
                         />
                         New
                     </label>
+
+               
                     <button onClick={() => handleDisplayOnHome(currentProduct.id, displayCategories)}>Save</button>
                     <button onClick={() => setDisplayFormVisible(false)}>Cancel</button>
                 </div>
