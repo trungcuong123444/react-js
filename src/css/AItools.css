@@ -84,3 +84,8 @@ footer {
     color: #007bff;
     font-weight: bold;
 }
+ul li {
+    cursor: pointer; /* Biến con trỏ thành dấu nhấp chuột khi di chuyển qua các mục */
+    color: blue; /* Đổi màu chữ thành màu xanh (mặc định của liên kết) */
+    text-decoration: underline; /* Gạch chân văn bản để giống với liên kết */
+}

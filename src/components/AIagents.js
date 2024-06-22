@@ -49,16 +49,15 @@ const AIagents = () => {
 
             <main className="hero">
                 <div className="container hero-content">
-                <h1>AI Agent Tools - Revolutionizing Automation & Productivity</h1>
-                <div className="hero-text">
-                    <p>Embark on a transformative journey with automation tools that have evolved significantly through AI agent technology. These tools are not confined to traditional scripts or sequences but are equipped with the ability to set goals, strategize, and adapt with human-like ingenuity. Their advanced adaptability allows AI agents to excel in dynamic environments, making informed decisions based on fresh data, which catalyzes innovation and streamlines task execution. Explore how these intelligent agents revolutionize task management and execution.</p>
-                 </div>
+                    <div className="hero-text">
+                        <h1>AI Agent Tools - Revolutionizing Automation & Productivity</h1>
+                        <p>Embark on a transformative journey with automation tools that have evolved significantly through AI agent technology. These tools are not confined to traditional scripts or sequences but are equipped with the ability to set goals, strategize, and adapt with human-like ingenuity. Their advanced adaptability allows AI agents to excel in dynamic environments, making informed decisions based on fresh data, which catalyzes innovation and streamlines task execution. Explore how these intelligent agents revolutionize task management and execution.</p>
+                    </div>
                     <div className="hero-image">
                         <img src={heroImage} alt="AI Agents" />
                     </div>
                 </div>
             </main>
-
             <div>
                 
             <div className="container">
