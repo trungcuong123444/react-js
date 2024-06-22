@@ -10,8 +10,9 @@ import CheckProduct from "./components/Checkproduct";
 import ListProduct from "./components/ListProduct";
 import UserProduct from "./components/UserProduct";
 import UpdateProduct from "./components/UpdateProduct";
-
 import ProductDetails from "./components/ProductDetails"; // Nhập ProductDetails
+
+import ProductReview from './components/ProductReview';
 
 function App() {
   return (
@@ -28,8 +29,12 @@ function App() {
         <Route path="/listproduct" element={<ListProduct />} />
 
         <Route path="/productdetails/:productId" element={<ProductDetails />} />
+        
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id/review" element={<ProductReview />} />
+      
 
-
+           
       </Routes>
     </Router>
   );

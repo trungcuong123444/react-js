@@ -2,9 +2,17 @@ import React, { useState, useEffect } from "react";
 import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
+import "../css/UserProduct.css"; // Import the CSS file
 
 const UserProduct = () => {
     const [products, setProducts] = useState([]);
+    const [displayFormVisible, setDisplayFormVisible] = useState(false);
+    const [currentProduct, setCurrentProduct] = useState(null);
+    const [displayCategories, setDisplayCategories] = useState({
+        featured: false,
+        popular: false,
+        new: false
+    });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,12 +38,30 @@ const UserProduct = () => {
         navigate(`/updateproduct/${productId}`);
     };
 
-    const handleDisplayOnHome = async (productId, display) => {
+    const handleDisplayOnHome = async (productId, displayCategories) => {
         const productRef = doc(db, "products", productId);
-        await updateDoc(productRef, { displayOnHome: display });
+        await updateDoc(productRef, displayCategories);
         setProducts(products.map(product => 
-            product.id === productId ? { ...product, displayOnHome: display } : product
+            product.id === productId ? { ...product, ...displayCategories } : product
         ));
+        setDisplayFormVisible(false);
+    };
+
+    const openDisplayForm = (product) => {
+        setCurrentProduct(product);
+        setDisplayFormVisible(true);
+        setDisplayCategories({
+            featured: product.featured || false,
+            popular: product.popular || false,
+            new: product.new || false
+        });
+    };
+
+    const handleDisplayCategoryChange = (category) => {
+        setDisplayCategories(prevState => ({
+            ...prevState,
+            [category]: !prevState[category]
+        }));
     };
 
     return (
@@ -52,11 +78,46 @@ const UserProduct = () => {
                         <p>Link: <a href={product.link} target="_blank" rel="noopener noreferrer">{product.link}</a></p>
                         <button onClick={() => handleUpdate(product.id)}>Update</button>
                         <button onClick={() => handleDelete(product.id)}>Delete</button>
-                        <button onClick={() => handleDisplayOnHome(product.id, true)}>Display</button>
-                        {product.displayOnHome && <button onClick={() => handleDisplayOnHome(product.id, false)}>Remove from Home</button>}
+                        <button onClick={() => openDisplayForm(product)}>Display</button>
+                        {(product.featured || product.popular || product.new) && (
+                            <button onClick={() => handleDisplayOnHome(product.id, { featured: false, popular: false, new: false })}>
+                                Remove from Home
+                            </button>
+                        )}
                     </li>
                 ))}
             </ul>
+            {displayFormVisible && currentProduct && (
+                <div className="display-form">
+                    <h3>Choose Display Categories for {currentProduct.name}</h3>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={displayCategories.featured}
+                            onChange={() => handleDisplayCategoryChange("featured")}
+                        />
+                        Featured
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={displayCategories.popular}
+                            onChange={() => handleDisplayCategoryChange("popular")}
+                        />
+                        Popular
+                    </label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={displayCategories.new}
+                            onChange={() => handleDisplayCategoryChange("new")}
+                        />
+                        New
+                    </label>
+                    <button onClick={() => handleDisplayOnHome(currentProduct.id, displayCategories)}>Save</button>
+                    <button onClick={() => setDisplayFormVisible(false)}>Cancel</button>
+                </div>
+            )}
         </div>
     );
 };

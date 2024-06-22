@@ -1,0 +1,38 @@
+/* ProductReview.css */
+
+.product-review-container {
+    padding: 20px;
+}
+
+.product-review-container h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.product-review-container p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.product-review-container .product-details {
+    margin-top: 20px;
+}
+
+.product-review-container .product-details p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.product-review-container .product-details img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.product-review-container .product-details a {
+    color: #007bff; /* Bootstrap link color */
+}
+
+.product-review-container .product-details a:hover {
+    text-decoration: underline;
+}

@@ -1,52 +1,69 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
-import { useNavigate, useLocation } from "react-router-dom";
-import { collection, query, getDocs, doc, updateDoc, where } from "firebase/firestore";
+import { useNavigate, Link } from "react-router-dom";
+import { collection, query, getDocs, where } from "firebase/firestore";
 import "../css/Home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [filterCategory, setFilterCategory] = useState("");
-    const [message, setMessage] = useState("");
-    const [rating, setRating] = useState(0);
+    const [filterType, setFilterType] = useState("featured");
+    const [view, setView] = useState(true);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
-                setUser(currentUser);
+                if (currentUser.email === "admin@gmail.com") {
+                    navigate("/admin");
+                } else {
+                    setUser(currentUser);
+                }
             } else {
                 setUser(null);
             }
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
     useEffect(() => {
-        setFilteredProducts(products);
-    }, [products]);
+        filterProducts();
+    }, [products, filterType]);
 
     const fetchProducts = async () => {
         try {
             const productsCollection = collection(db, "products");
-            const q = query(productsCollection, where("displayOnHome", "==", true));
-
-            const querySnapshot = await getDocs(q);
+            const querySnapshot = await getDocs(productsCollection);
             const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setProducts(productsData);
         } catch (error) {
             console.error("Error fetching products: ", error);
+        }
+    };
+
+    const filterProducts = () => {
+        switch (filterType) {
+            case "featured":
+                setFilteredProducts(products.filter(product => product.featured));
+                break;
+            case "popular":
+                setFilteredProducts(products.filter(product => product.popular));
+                break;
+            case "new":
+                setFilteredProducts(products.filter(product => product.new));
+                break;
+            default:
+                setFilteredProducts(products);
+                break;
         }
     };
 
@@ -67,41 +84,31 @@ const Home = () => {
         navigate("/userproduct");
     };
 
-    const handleFilterCategory = (category) => {
-        setFilterCategory(category);
-        if (category === "") {
-            setFilteredProducts(products);
-        } else {
-            const filtered = products.filter(product => product.category === category);
-            setFilteredProducts(filtered);
-        }
+    const handleFilterCategory = (type) => {
+        setFilterType(type);
     };
 
-    const clearFilters = () => {
-        setFilterCategory("");
-        setFilteredProducts(products);
+    const handleSearch = (searchTerm) => {
+        const searchTermLower = searchTerm.toLowerCase();
+        const filtered = products.filter(product =>
+            product.name.toLowerCase().includes(searchTermLower)
+        );
+        setFilteredProducts(filtered);
     };
 
-    const handleRateProduct = async (productId) => {
-        try {
-            if (rating === 0) {
-                setMessage("Vui lòng chọn số sao trước khi đánh giá.");
-                return;
-            }
-
-            // Update Firestore with rating
-            const productRef = doc(db, "products", productId);
-            await updateDoc(productRef, { rating });
-
-            setMessage(`Bạn đã đánh giá sản phẩm ${productId} thành công với ${rating} sao.`);
-        } catch (error) {
-            console.error("Error rating product:", error);
-            setMessage(`Đã xảy ra lỗi khi đánh giá sản phẩm.`);
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleSearch(event.target.value);
         }
     };
 
     const handleNavigateToDetails = (productId) => {
         navigate(`/productdetails/${productId}`);
+    };
+
+    const toggleView = () => {
+        setView(prevState => !prevState);
     };
 
     return (
@@ -111,7 +118,7 @@ const Home = () => {
                     <div className="container">
                         <h1>FUTUREPEDIA</h1>
                         <ul>
-                            {user && <li><p>Hello, {user.displayName || user.email}</p></li>}
+                            {user && <p>Hello, {user.displayName || user.email}</p>}
                             {user ? (
                                 <>
                                     <li><button onClick={handleLogout}>Logout</button></li>
@@ -138,63 +145,98 @@ const Home = () => {
                     </div>
                 </section>
 
-                <section className="products">
-                    <div className="container">
-                        <h2>Featured Products</h2>
-                        <div className="product-list">
-                            {products.length > 0 ? (
-                                products.map(product => (
+                <div className="col-12">
+                <button
+                    type="button"
+                    className={`btn ${filterType === "featured" ? "btn-danger active" : "btn-outline-danger"}`}
+                    onClick={() => handleFilterCategory("featured")}
+                >
+                    Featured
+                </button>
+                <button
+                    type="button"
+                    className={`btn ${filterType === "popular" ? "btn-danger active" : "btn-outline-danger"}`}
+                    onClick={() => handleFilterCategory("popular")}
+                >
+                    Popular
+                </button>
+                <button
+                    type="button"
+                    className={`btn ${filterType === "new" ? "btn-danger active" : "btn-outline-danger"}`}
+                    onClick={() => handleFilterCategory("new")}
+                >
+                    New
+                </button>
+ 
+
+                    {/* Toggle Button Placed Here */}
+                    <button className="switch-button" onClick={toggleView}>
+                        {view ? "Switch to My Products" : "Switch to Product List"}
+                    </button>
+                    <hr />
+                </div>
+
+                <h2>
+                    {filterType === "featured" ? "Featured Products" :
+                        filterType === "popular" ? "Popular Products" :
+                            filterType === "new" ? "New Products" : ""}
+                </h2>
+
+                <div className="product-list">
+                    {/* Product List or My Product List rendering based on `view` */}
+                    {view ? (
+                        filteredProducts.length > 0 ? (
+                            <div className="product-list">
+                                {filteredProducts.map(product => (
                                     <div className="product" key={product.id}>
                                         <img src={product.imageUrl} alt={product.name} />
                                         <h3>{product.name}</h3>
                                         <p>{product.description}</p>
-                                        <button onClick={() => handleNavigateToDetails(product.id)}>Details</button>
+                                        <button className="details-button" onClick={() => handleNavigateToDetails(product.id)}>Details</button>
                                     </div>
-                                ))
-                            ) : (
-                                <p>No approved products available</p>
-                            )}
-                        </div>
-                    </div>
-                </section>
-
-                <section className="user-products">
-                    <div className="container">
-                        {filteredProducts.length > 0 ? (
-                            <div>
-                                <h3>Sản phẩm của tôi</h3>
-                                <ul>
-                                    {filteredProducts.map(product => (
-                                        <li key={product.id}>
-                                            <h4>{product.name}</h4>
-                                            <p>{product.description}</p>
-                                            {product.imageUrl && <img src={product.imageUrl} alt={product.name} style={{ width: "100px" }} />}
-                                            <p>Danh mục: {product.category}</p>
-                                            <p>Tags: {product.tags.join(", ")}</p>
-                                            <p><a href={product.link}>Liên kết sản phẩm</a></p>
-                                            <div>
-                                                <p>Đánh giá: </p>
-                                                {[...Array(product.rating)].map((star, i) => (
-                                                    <FontAwesomeIcon icon={faStar} key={i} />
-                                                ))}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                                ))}
                             </div>
                         ) : (
-                            <p>Không có sản phẩm nào.</p>
-                        )}
-                    </div>
-                </section>
+                            <p>No products available</p>
+                        )
+                    ) : (
+                        filteredProducts.length > 0 ? (
+                            <ul className="my-product-list">
+                                {filteredProducts.map(product => (
+                                    <li key={product.id}>
+                                        <h4>{product.name}</h4>
+                                        <p>{product.description}</p>
+                                        {product.imageUrl && (
+                                            <img src={product.imageUrl} alt={product.name} style={{ width: "100px" }} />
+                                        )}
+                                        <p>Category: {product.category}</p>
+                                        <p>Tags: {product.tags.join(", ")}</p>
+                                        <p><a href={product.link}>Product Link</a></p>
+                                        <div className="ratings">
+                                            <p>Rating: </p>
+                                            {[...Array(product.rating)].map((_, i) => (
+                                                <FontAwesomeIcon icon={faStar} key={i} />
+                                            ))}
+                                            <Link to={`/product/${product.id}/review`} className="review-button">
+                                                {product.numReviews} Reviews
+                                            </Link>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No products available</p>
+                        )
+                    )}
+                </div>
             </main>
 
+                    
             <footer>
                 <div className="container">
                     <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
                 </div>
             </footer>
-            {message && <p>{message}</p>}
         </div>
     );
 };

@@ -1,4 +1,4 @@
-/* Home.css */
+/* Reset and basic styles */
 
 body {
     font-family: Arial, sans-serif;
@@ -12,7 +12,10 @@ body {
 .container {
     width: 80%;
     margin: 0 auto;
+  
 }
+
+/* Header styles */
 
 header {
     background-color: #333;
@@ -22,13 +25,13 @@ header {
 
 header nav {
     display: flex;
-    justify-content: center; /* Căn các nút ra giữa */
+    justify-content: center;
 }
 
 header nav ul {
     list-style-type: none;
     display: flex;
-    align-items: center; /* Căn các phần tử theo chiều dọc vào giữa */
+    align-items: center;
     margin: 0;
     padding: 0;
 }
@@ -38,12 +41,12 @@ header nav ul li {
 }
 
 header nav ul li button {
-    background-color: transparent; /* Xoá nền của nút */
+    background-color: transparent;
     color: #181717;
     border: none;
     padding: 10px 15px;
     cursor: pointer;
-    transition: color 0.3s; /* Hiệu ứng màu khi hover */
+    transition: color 0.3s;
 }
 
 header nav ul li button:hover {
@@ -51,7 +54,7 @@ header nav ul li button:hover {
 }
 
 header nav ul li .list-fields-button {
-    background-color: #e3e9f0; /* Nền của nút List Fields */
+    background-color: #e3e9f0;
     border-radius: 10px;
 }
 
@@ -71,6 +74,8 @@ header nav ul li .list-fields-button:hover {
     margin-right: 10px;
 }
 
+/* Hero section */
+
 .hero {
     background-color: #f0f0f0;
     padding: 50px 0;
@@ -85,6 +90,8 @@ header nav ul li .list-fields-button:hover {
     font-size: 16px;
     cursor: pointer;
 }
+
+/* Main content area */
 
 .main-content {
     flex: 1;
@@ -128,7 +135,7 @@ header nav ul li .list-fields-button:hover {
     margin-bottom: 10px;
 }
 
-.product button {
+.product button, .details-button, .switch-button {
     background-color: #333;
     color: #fff;
     border: none;
@@ -136,6 +143,44 @@ header nav ul li .list-fields-button:hover {
     font-size: 14px;
     cursor: pointer;
 }
+
+.product button:hover, .details-button:hover, .switch-button:hover {
+    background-color: #0056b3;
+}
+
+/* Details button specific style */
+
+.product .details-button {
+    margin-top: 10px;
+}
+
+/* Switch button */
+
+.col-12 {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.switch-button {
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    position: absolute;
+    top: 0;
+    right: 20px;
+}
+
+.switch-button:hover {
+    background-color: #333;
+}
+
+/* Footer */
 
 footer {
     background-color: #333;
