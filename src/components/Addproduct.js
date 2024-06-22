@@ -1,19 +1,30 @@
-//src\components\AddProduct.js
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig";
-
+import { db, storage, auth } from "../firebaseConfig"; // Ensure you have storage exported from firebaseConfig
+import { useNavigate } from "react-router-dom";
+import { MultiSelect } from "react-multi-select-component";
 
 const AddProduct = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [catalogs, setCatalogs] = useState([]);
+    const [selectedCatalogs, setSelectedCatalogs] = useState([]);
     const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
     
+    useEffect(() => {
+        const fetchCatalogs = async () => {
+            const querySnapshot = await getDocs(collection(db, "catalogs"));
+            const catalogsList = querySnapshot.docs.map(doc => ({ label: doc.data().name, value: doc.id }));
+            setCatalogs(catalogsList);
+        };
+        fetchCatalogs();
+    }, []);
+
 
     const handleImageUpload = async (file) => {
         const storageRef = ref(storage, `images/${file.name}`);
@@ -37,11 +48,11 @@ const AddProduct = () => {
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
-                    category,
+                    catalogs: selectedCatalogs.map(cat => cat.value), 
                     imageUrl,
                     tags: tags.split(","),
                     link,
-                    status: isAdmin ? "approved" : "pending", // Set status based on admin check
+                    status: "pending", // Initial status
                     createdAt: new Date(),
                     uid: user.uid, // Save the user's UID
                 });
@@ -72,12 +83,12 @@ const AddProduct = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
+                <MultiSelect
+                    options={catalogs}
+                    value={selectedCatalogs}
+                    onChange={setSelectedCatalogs}
+                    labelledBy="Select Catalogs"
+                    hasSelectAll={false}
                 />
                 <input
                     type="file"

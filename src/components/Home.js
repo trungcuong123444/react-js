@@ -23,7 +23,7 @@ const Home = () => {
                 setUser(null);
             }
         });
-    
+
         return () => unsubscribe();
     }, [navigate]);
 
@@ -46,24 +46,8 @@ const Home = () => {
     }, []);
 
     const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/login");
-    };
-
-    const handleNavigateToLogin = () => {
-        navigate("/login");
-    }
-
-    const handleNavigateToRegister = () => {
-        navigate("/register");
-    };
-
-    const handleNavigateToAddProduct = () => {
-        navigate("/addproduct");
-    };
-
-    const handleNavigateToListProduct = () => {
-        navigate("/userproduct");
+        await signOut(auth);
+        setUser(null);
     };
 
     const toggleDropdown = () => {
@@ -75,28 +59,31 @@ const Home = () => {
             <header>
                 <nav>
                     <div className="container">
-                    <h1>Futurepedia</h1>
+                        <h1>Futurepedia</h1>
                         <ul>
                             <li><button onClick={() => navigate("/aitools")}>AI Tools</button></li>
-                            <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>    
+                            <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>
                             <li><button onClick={() => navigate("/aitutorials")}>AI Tutorials</button></li>
-                            <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>                     
-                            <li>
-                                <button onClick={toggleDropdown}>More</button>
-                                {dropdownOpen && (
-                                    <ul className="dropdown-menu">
-                                        <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
-                                        <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>
-                                        <li><button onClick={() => navigate("/sponsorship-options")}>Sponsorship Options</button></li>
-                                        <li><button onClick={() => navigate("/submit-tool")}>Submit A Tool</button></li>
-                                        <li><button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button></li>
-                                    </ul>
-                                )}
-                            </li>
+                            <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>
+                            {user && (
+                                <li>
+                                    <button onClick={toggleDropdown}>More</button>
+                                    {dropdownOpen && (
+                                        <ul className="dropdown-menu">
+                                            <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
+                                            <li><button onClick={() => navigate("/addcatalog")}>Add Catalog</button></li>
+                                            <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>
+                                            <li><button onClick={() => navigate("/sponsorship-options")}>Sponsorship Options</button></li>
+                                            <li><button onClick={() => navigate("/submit-tool")}>Submit A Tool</button></li>
+                                            <li><button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button></li>
+                                        </ul>
+                                    )}
+                                </li>
+                            )}
                             {user && <li>Hello, {user.displayName || user.email}</li>}
                             {user && <li><button onClick={handleLogout}>Logout</button></li>}
-                            {!user && <li><button onClick={handleNavigateToLogin}>Login</button></li>}
-                            {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
+                            {!user && <li><button onClick={() => navigate("/login")}>Login</button></li>}
+                            {!user && <li><button onClick={() => navigate("/register")}>Register</button></li>}
                         </ul>
                     </div>
                 </nav>
@@ -112,7 +99,7 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            
+
             <section className="tags">
                 <div className="button-container">
                     <button>Marketing</button>
@@ -123,42 +110,31 @@ const Home = () => {
                     <button>All Categories</button>
                 </div>
             </section>
+
             <section className="products">
                 <div className="container">
                     <h2>Featured Products</h2>
-                    <div className="container">
-                    <div className="breadcrumb-container">
-                        <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Active</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
-                        </li>
-                        </ul>
-                    </div>
-                    {/* Các phần tử khác */}
-                 </div>
                     <div className="product-list">
                         {products.length > 0 ? (
                             products.map(product => (
                                 <div className="product" key={product.id}>
                                     <div className="product-header">
-                                        <img src={product.imageUrl} alt={product.name} className="product-img" />
+                                        <img
+                                            src={product.imageUrl}
+                                            alt={product.name}
+                                            className="product-img"
+                                            onClick={() => navigate(`/productinfor/${product.id}`)}
+                                        />
                                         <p className="product-name">{product.name}</p>
                                     </div>
                                     <p className="product-description">{product.description}</p>
-                                    <button onClick={() => navigate(`/productdetails/${product.id}`)}>Visit</button>
+                                    <button onClick={() => window.open(product.link, "_blank")}>Visit</button>
                                 </div>
                             ))
                         ) : (
                             <p>No approved products available</p>
                         )}
                     </div>
-
                 </div>
             </section>
         </div>
