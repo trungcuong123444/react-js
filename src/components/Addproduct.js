@@ -14,6 +14,15 @@ const AddProduct = () => {
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
     const [message, setMessage] = useState("");
+    const [features, setFeatures] = useState({
+        waitlist: false,
+        openSource: false,
+        mobileApp: false,
+        discordCommunity: false,
+        api: false,
+        noSignupRequired: false,
+        browserExtension: false,
+    });
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -55,6 +64,15 @@ const AddProduct = () => {
                     status: "pending", // Initial status
                     createdAt: new Date(),
                     uid: user.uid, // Save the user's UID
+                    features: {
+                        waitlist: features.waitlist,
+                        openSource: features.openSource,
+                        mobileApp: features.mobileApp,
+                        discordCommunity: features.discordCommunity,
+                        api: features.api,
+                        noSignupRequired: features.noSignupRequired,
+                        browserExtension: features.browserExtension,
+                    },
                 });
 
                 setMessage("Bạn đã đề nghị thêm sản phẩm thành công.");
@@ -64,6 +82,13 @@ const AddProduct = () => {
         } catch (error) {
             setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
+    };
+
+    const handleFeatureChange = (feature) => {
+        setFeatures(prevFeatures => ({
+            ...prevFeatures,
+            [feature]: !prevFeatures[feature],
+        }));
     };
 
     return (
@@ -108,6 +133,71 @@ const AddProduct = () => {
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
+
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.waitlist}
+                            onChange={() => handleFeatureChange('waitlist')}
+                        /> Waitlist
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.openSource}
+                            onChange={() => handleFeatureChange('openSource')}
+                        /> Open Source
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.mobileApp}
+                            onChange={() => handleFeatureChange('mobileApp')}
+                        /> Mobile App
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.discordCommunity}
+                            onChange={() => handleFeatureChange('discordCommunity')}
+                        /> Discord Community
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.api}
+                            onChange={() => handleFeatureChange('api')}
+                        /> API
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.noSignupRequired}
+                            onChange={() => handleFeatureChange('noSignupRequired')}
+                        /> No Signup Required
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.browserExtension}
+                            onChange={() => handleFeatureChange('browserExtension')}
+                        /> Browser Extension
+                    </label>
+                </div>
+
                 <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
