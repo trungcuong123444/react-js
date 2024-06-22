@@ -1,19 +1,38 @@
-//src\components\AddProduct.js
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig";
+import { db, storage } from "../firebaseConfig";
+import { useParams, useNavigate } from "react-router-dom";
 
-
-const AddProduct = () => {
+const UpdateProduct = () => {
+    const { productId } = useParams();
+    const [product, setProduct] = useState(null);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
-    const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
-    const [message, setMessage] = useState("");
-    
+    const [image, setImage] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            const docRef = doc(db, "products", productId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const productData = docSnap.data();
+                setProduct(productData);
+                setName(productData.name);
+                setDescription(productData.description);
+                setCategory(productData.category);
+                setTags(productData.tags.join(", "));
+                setLink(productData.link);
+            }
+        };
+
+        fetchProduct();
+    }, [productId]);
 
     const handleImageUpload = async (file) => {
         const storageRef = ref(storage, `images/${file.name}`);
@@ -21,44 +40,40 @@ const AddProduct = () => {
         return await getDownloadURL(storageRef);
     };
 
-    const handleSubmit = async (e) => {
+    const handleUpdate = async (e) => {
         e.preventDefault();
 
         try {
-            let imageUrl = "";
+            let imageUrl = product.imageUrl;
             if (image) {
                 imageUrl = await handleImageUpload(image);
             }
 
-            const user = auth.currentUser;
-            if (user) {
-                const isAdmin = user.email === "admin@gmail.com" && user.password === "123456"; // This line assumes you have access to the password directly which is not recommended
+            const productRef = doc(db, "products", productId);
+            await updateDoc(productRef, {
+                name,
+                description,
+                category,
+                imageUrl,
+                tags: tags.split(","),
+                link,
+                updatedAt: new Date(),
+            });
 
-                await addDoc(collection(db, "products"), {
-                    name,
-                    description,
-                    category,
-                    imageUrl,
-                    tags: tags.split(","),
-                    link,
-                    status: isAdmin ? "approved" : "pending", // Set status based on admin check
-                    createdAt: new Date(),
-                    uid: user.uid, // Save the user's UID
-                });
-
-                setMessage("Bạn đã đề nghị thêm sản phẩm thành công.");
-            } else {
-                setMessage("User is not logged in");
-            }
+            navigate("/userproducts"); // Chuyển hướng về trang UserProduct sau khi cập nhật thành công
         } catch (error) {
-            setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
+            console.error("Error updating document: ", error);
         }
     };
 
+    if (!product) {
+        return <p>Loading...</p>;
+    }
+
     return (
         <div className="auth-container">
-            <h2>Add Product</h2>
-            <form onSubmit={handleSubmit}>
+            <h2>Update Product</h2>
+            <form onSubmit={handleUpdate}>
                 <input
                     type="text"
                     placeholder="Name"
@@ -97,11 +112,10 @@ const AddProduct = () => {
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
-                <button type="submit">Create</button>
+                <button type="submit">Update</button>
             </form>
-            {message && <p>{message}</p>}
         </div>
     );
 };
 
-export default AddProduct;
+export default UpdateProduct;

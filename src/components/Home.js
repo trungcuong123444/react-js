@@ -1,58 +1,102 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "../css/Home.css";
 
 const Home = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null); // State để lưu thông tin người dùng
+    const [user, setUser] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
-                // Nếu có người dùng đăng nhập, lưu thông tin vào state
-                setUser(currentUser);
+                if (currentUser.email === "admin@gmail.com") {
+                    navigate("/admin");
+                } else {
+                    setUser(currentUser);
+                }
             } else {
-                // Nếu không có người dùng đăng nhập, reset state
                 setUser(null);
             }
         });
+    
+        return () => unsubscribe();
+    }, [navigate]);
 
-        return () => unsubscribe(); // Cleanup function
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const q = query(collection(db, "products"), where("status", "==", "approved"));
+                const querySnapshot = await getDocs(q);
+                const productsData = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setProducts(productsData);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+
+        fetchProducts();
     }, []);
 
     const handleLogout = async () => {
-        await signOut(auth);
-        navigate("/login");
+    await signOut(auth);
+    navigate("/login");
     };
+
+    const handleNavigateToLogin = () => {
+        navigate("/login");
+    }
 
     const handleNavigateToRegister = () => {
         navigate("/register");
     };
 
-    // Navigation handlers for AddProduct and ListProduct
     const handleNavigateToAddProduct = () => {
         navigate("/addproduct");
     };
 
     const handleNavigateToListProduct = () => {
-        navigate("/listproduct");
+        navigate("/userproduct");
+    };
+
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
     };
 
     return (
-        <div>
+        <div className="home">
             <header>
                 <nav>
                     <div className="container">
-                        <h1>FUTUREPEDIA</h1>
+                    <h1>Futurepedia</h1>
                         <ul>
-                            {user && <p>Hello, {user.displayName || user.email}</p>}
-                            <li><button onClick={handleLogout}>Logout</button></li>
-                            {!user && <li><button onClick={handleNavigateToRegister}>Login</button></li>}
+                            <li><button onClick={() => navigate("/aitools")}>AI Tools</button></li>
+                            <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>    
+                            <li><button onClick={() => navigate("/aitutorials")}>AI Tutorials</button></li>
+                            <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>                     
+                            <li>
+                                <button onClick={toggleDropdown}>More</button>
+                                {dropdownOpen && (
+                                    <ul className="dropdown-menu">
+                                        <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
+                                        <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>
+                                        <li><button onClick={() => navigate("/sponsorship-options")}>Sponsorship Options</button></li>
+                                        <li><button onClick={() => navigate("/submit-tool")}>Submit A Tool</button></li>
+                                        <li><button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button></li>
+                                    </ul>
+                                )}
+                            </li>
+                            {user && <li>Hello, {user.displayName || user.email}</li>}
+                            {user && <li><button onClick={handleLogout}>Logout</button></li>}
+                            {!user && <li><button onClick={handleNavigateToLogin}>Login</button></li>}
                             {!user && <li><button onClick={handleNavigateToRegister}>Register</button></li>}
-                            <li><button onClick={handleNavigateToAddProduct}>Add Product</button></li>
-                            <li><button onClick={handleNavigateToListProduct}>List Products</button></li>
                         </ul>
                     </div>
                 </nav>
@@ -60,38 +104,63 @@ const Home = () => {
 
             <section className="hero">
                 <div className="container">
-                    <h2>FUTUREPEDIA</h2>
-                    <p>Explore our latest products and exclusive deals.</p>
-                    <button>Click Now</button>
-                </div>
-            </section>
-
-            <section className="products">
-                <div className="container">
-                    <h2>Featured Products</h2>
-                    <div className="product-list">
-                        <div className="product">
-                            <img src="https://via.placeholder.com/150" alt="Product" />
-                            <h3>Product Name</h3>
-                            <p>$99.99</p>
-                            <button>Add to Cart</button>
-                        </div>
-                        <div className="product">
-                            <img src="https://via.placeholder.com/150" alt="Product" />
-                            <h3>Product Name</h3>
-                            <p>$79.99</p>
-                            <button>Add to Cart</button>
-                        </div>
-                        {/* Add more products as needed */}
+                    <h1>Discover what AI can do for you</h1>
+                    <p>We've helped professionals learn to leverage AI by helping them find the best AI tools.</p>
+                    <div className="search-bar">
+                        <input type="text" placeholder="Enter a tool name or use case..." />
+                        <button>Search AI Tools</button>
                     </div>
                 </div>
             </section>
-
-            <footer>
-                <div className="container">
-                    <p>&copy; 2024 FUTUREPEDIA. All rights reserved.</p>
+            
+            <section className="tags">
+                <div className="button-container">
+                    <button>Marketing</button>
+                    <button>Productivity</button>
+                    <button>Design</button>
+                    <button>Video</button>
+                    <button>Research</button>
+                    <button>All Categories</button>
                 </div>
-            </footer>
+            </section>
+            <section className="products">
+                <div className="container">
+                    <h2>Featured Products</h2>
+                    <div className="container">
+                    <div className="breadcrumb-container">
+                        <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Active</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        </ul>
+                    </div>
+                    {/* Các phần tử khác */}
+                 </div>
+                    <div className="product-list">
+                        {products.length > 0 ? (
+                            products.map(product => (
+                                <div className="product" key={product.id}>
+                                    <div className="product-header">
+                                        <img src={product.imageUrl} alt={product.name} className="product-img" />
+                                        <p className="product-name">{product.name}</p>
+                                    </div>
+                                    <p className="product-description">{product.description}</p>
+                                    <button onClick={() => navigate(`/productdetails/${product.id}`)}>Visit</button>
+                                </div>
+                            ))
+                        ) : (
+                            <p>No approved products available</p>
+                        )}
+                    </div>
+
+                </div>
+            </section>
         </div>
     );
 };

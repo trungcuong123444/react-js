@@ -11,6 +11,7 @@ const Register = () => {
     const [name, setName] = useState("");
     const [id, setId] = useState("");
     const [error, setError] = useState("");
+
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
