@@ -309,4 +309,22 @@ footer .copyright {
     margin-bottom: 10px; /* Khoảng cách phía dưới breadcrumb */
     width: 100%; /* Đảm bảo chiếm hết chiều rộng của container */
 }
-
+.embed-responsive iframe, .embed-responsive object, .embed-responsive video {
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    left: 0px;
+    width: 60%;
+    height: 80%;
+    border: 5;
+}
+.embed-responsive2 {
+    
+    width: 30%;
+    text-align: right;
+}
+.Video {
+    display: flex;
+    justify-content: space-between; /* Các video sẽ căn cách nhau một khoảng cố định */
+    flex-wrap: wrap; /* Đảm bảo các video chuyển xuống hàng nếu không đủ không gian */
+}

@@ -152,6 +152,14 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+            <section class="Video">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item1" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
+                   
+                    <iframe class="embed-responsive-item2" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
+             
+                </div>
+            </section>
         </div>
     );
 };

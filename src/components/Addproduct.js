@@ -134,7 +134,7 @@ const AddProduct = () => {
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
-
+            <div className="checkbox">
                 <div>
                     <label>
                         <input
@@ -143,8 +143,6 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('waitlist')}
                         /> Waitlist
                     </label>
-                </div>
-                <div>
                     <label>
                         <input
                             type="checkbox"
@@ -152,8 +150,6 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('openSource')}
                         /> Open Source
                     </label>
-                </div>
-                <div>
                     <label>
                         <input
                             type="checkbox"
@@ -161,8 +157,6 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('mobileApp')}
                         /> Mobile App
                     </label>
-                </div>
-                <div>
                     <label>
                         <input
                             type="checkbox"
@@ -170,8 +164,6 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('discordCommunity')}
                         /> Discord Community
                     </label>
-                </div>
-                <div>
                     <label>
                         <input
                             type="checkbox"
@@ -179,8 +171,6 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('api')}
                         /> API
                     </label>
-                </div>
-                <div>
                     <label>
                         <input
                             type="checkbox"
@@ -188,8 +178,7 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('noSignupRequired')}
                         /> No Signup Required
                     </label>
-                </div>
-                <div>
+            </div>
                     <label>
                         <input
                             type="checkbox"
@@ -197,11 +186,11 @@ const AddProduct = () => {
                             onChange={() => handleFeatureChange('browserExtension')}
                         /> Browser Extension
                     </label>
-                </div>
-
+                </div>               
                 <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
+
         </div>
     );
 };
