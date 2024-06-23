@@ -1,19 +1,40 @@
-//src\components\AddProduct.js
-import React, { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig";
-
+import { db, storage, auth } from "../firebaseConfig"; // Ensure you have storage exported from firebaseConfig
+import { useNavigate } from "react-router-dom";
+import { MultiSelect } from 'react-multi-select-component';
+import '../css/addproduct.css';
 
 const AddProduct = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [catalogs, setCatalogs] = useState([]);
+    const [selectedCatalogs, setSelectedCatalogs] = useState([]);
     const [image, setImage] = useState(null);
     const [tags, setTags] = useState("");
     const [link, setLink] = useState("");
     const [message, setMessage] = useState("");
+    const [features, setFeatures] = useState({
+        waitlist: false,
+        openSource: false,
+        mobileApp: false,
+        discordCommunity: false,
+        api: false,
+        noSignupRequired: false,
+        browserExtension: false,
+    });
+    const navigate = useNavigate();
     
+    useEffect(() => {
+        const fetchCatalogs = async () => {
+            const querySnapshot = await getDocs(collection(db, "catalogs"));
+            const catalogsList = querySnapshot.docs.map(doc => ({ label: doc.data().name, value: doc.id }));
+            setCatalogs(catalogsList);
+        };
+        fetchCatalogs();
+    }, []);
+
 
     const handleImageUpload = async (file) => {
         const storageRef = ref(storage, `images/${file.name}`);
@@ -37,13 +58,22 @@ const AddProduct = () => {
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
-                    category,
+                    catalogs: selectedCatalogs.map(cat => cat.value), 
                     imageUrl,
                     tags: tags.split(","),
                     link,
-                    status: isAdmin ? "approved" : "pending", // Set status based on admin check
+                    status: "pending", // Initial status
                     createdAt: new Date(),
                     uid: user.uid, // Save the user's UID
+                    features: {
+                        waitlist: features.waitlist,
+                        openSource: features.openSource,
+                        mobileApp: features.mobileApp,
+                        discordCommunity: features.discordCommunity,
+                        api: features.api,
+                        noSignupRequired: features.noSignupRequired,
+                        browserExtension: features.browserExtension,
+                    },
                 });
 
                 setMessage("Bạn đã đề nghị thêm sản phẩm thành công.");
@@ -53,6 +83,13 @@ const AddProduct = () => {
         } catch (error) {
             setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
         }
+    };
+
+    const handleFeatureChange = (feature) => {
+        setFeatures(prevFeatures => ({
+            ...prevFeatures,
+            [feature]: !prevFeatures[feature],
+        }));
     };
 
     return (
@@ -72,12 +109,12 @@ const AddProduct = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
+                <MultiSelect
+                    options={catalogs}
+                    value={selectedCatalogs}
+                    onChange={setSelectedCatalogs}
+                    labelledBy="Select Catalogs"
+                    hasSelectAll={false}
                 />
                 <input
                     type="file"
@@ -97,6 +134,71 @@ const AddProduct = () => {
                     onChange={(e) => setLink(e.target.value)}
                     required
                 />
+
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.waitlist}
+                            onChange={() => handleFeatureChange('waitlist')}
+                        /> Waitlist
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.openSource}
+                            onChange={() => handleFeatureChange('openSource')}
+                        /> Open Source
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.mobileApp}
+                            onChange={() => handleFeatureChange('mobileApp')}
+                        /> Mobile App
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.discordCommunity}
+                            onChange={() => handleFeatureChange('discordCommunity')}
+                        /> Discord Community
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.api}
+                            onChange={() => handleFeatureChange('api')}
+                        /> API
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.noSignupRequired}
+                            onChange={() => handleFeatureChange('noSignupRequired')}
+                        /> No Signup Required
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={features.browserExtension}
+                            onChange={() => handleFeatureChange('browserExtension')}
+                        /> Browser Extension
+                    </label>
+                </div>
+
                 <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
