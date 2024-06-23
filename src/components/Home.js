@@ -3,13 +3,18 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faFire, faClock, faFilter, faCheckCircle, faEye } from "@fortawesome/free-solid-svg-icons";
 import "../css/Home.css";
 
 const Home = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [view, setView] = useState(true);
+    const [filterType, setFilterType] = useState("featured"); // Default filter type
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -37,21 +42,54 @@ const Home = () => {
                     ...doc.data()
                 }));
                 setProducts(productsData);
+                filterProducts(filterType, productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [filterType]);
 
     const handleLogout = async () => {
-        await signOut(auth);
-        setUser(null);
+        try {
+            await signOut(auth);
+            setUser(null);
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     };
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
+    };
+
+    const toggleView = () => {
+        setView(prevView => !prevView);
+    };
+
+    const handleFilterChange = (filter) => {
+        setFilterType(filter);
+    };
+
+    const filterProducts = (type, productsData) => {
+        switch (type) {
+            case "featured":
+                setFilteredProducts(productsData.filter(product => product.featured));
+                break;
+            case "popular":
+                setFilteredProducts(productsData.filter(product => product.popular));
+                break;
+            case "new":
+                setFilteredProducts(productsData.filter(product => product.new));
+                break;
+            case "all":
+                setFilteredProducts(productsData); // Assuming "all" should show all products
+                break;
+            default:
+                setFilteredProducts(productsData);
+                break;
+        }
     };
 
     return (
@@ -65,7 +103,7 @@ const Home = () => {
                             <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>
                             <li><button onClick={() => navigate("/aitutorials")}>AI Tutorials</button></li>
                             <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>
-                            {user && (
+                            {user ? (
                                 <li>
                                     <button onClick={toggleDropdown}>More</button>
                                     {dropdownOpen && (
@@ -79,11 +117,14 @@ const Home = () => {
                                         </ul>
                                     )}
                                 </li>
+                            ) : (
+                                <>
+                                    <li><button onClick={() => navigate("/login")}>Login</button></li>
+                                    <li><button onClick={() => navigate("/register")}>Register</button></li>
+                                </>
                             )}
                             {user && <li>Hello, {user.displayName || user.email}</li>}
                             {user && <li><button onClick={handleLogout}>Logout</button></li>}
-                            {!user && <li><button onClick={() => navigate("/login")}>Login</button></li>}
-                            {!user && <li><button onClick={() => navigate("/register")}>Register</button></li>}
                         </ul>
                     </div>
                 </nav>
@@ -102,36 +143,53 @@ const Home = () => {
 
             <section className="tags">
                 <div className="button-container">
-                    <button>Marketing</button>
-                    <button>Productivity</button>
-                    <button>Design</button>
-                    <button>Video</button>
-                    <button>Research</button>
-                    <button>All Categories</button>
+                    <button onClick={() => handleFilterChange("marketing")}>Marketing</button>
+                    <button onClick={() => handleFilterChange("productivity")}>Productivity</button>
+                    <button onClick={() => handleFilterChange("design")}>Design</button>
+                    <button onClick={() => handleFilterChange("video")}>Video</button>
+                    <button onClick={() => handleFilterChange("research")}>Research</button>
+                    <button onClick={() => handleFilterChange("all")}>All Categories</button>
                 </div>
             </section>
+
             <div className="container">
                 <div className="breadcrumb-container">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Featured</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Popular</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">New</a>
-                    </li>
+                    <ul className="nav">
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "featured" ? "active" : ""}`} onClick={() => handleFilterChange("featured")}>
+                                <FontAwesomeIcon icon={faStar} /> Featured
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "popular" ? "active" : ""}`} onClick={() => handleFilterChange("popular")}>
+                                <FontAwesomeIcon icon={faFire} /> Popular
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "new" ? "active" : ""}`} onClick={() => handleFilterChange("new")}>
+                                <FontAwesomeIcon icon={faClock} /> New
+                            </a>
+                        </li>
                     </ul>
+
+                    <hr />
+                    <button className="filters-button" onClick={() => handleFilterChange("Filters")}>
+                        <FontAwesomeIcon icon={faFilter} /> Filters
+                    </button>
+                    <button className="verified-button" onClick={() => handleFilterChange("Verified")}>
+                        <FontAwesomeIcon icon={faCheckCircle} /> Verified
+                    </button>
+                    <button className="switch-button" onClick={toggleView}>
+                        <FontAwesomeIcon icon={faEye} /> {view ? " View" : " View1"}
+                    </button>
                 </div>
-                {/* Các phần tử khác */}
             </div>
+
             <section className="products">
                 <div className="container">
-                    <h2>Featured Products</h2>
-                    <div className="product-list">
-                        {products.length > 0 ? (
-                            products.map(product => (
+                    <div className={`product-list ${view ? '' : 'vertical-view'}`}>
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map(product => (
                                 <div className="product" key={product.id}>
                                     <div className="product-header">
                                         <img
@@ -147,7 +205,7 @@ const Home = () => {
                                 </div>
                             ))
                         ) : (
-                            <p>No approved products available</p>
+                            <p>No products available</p>
                         )}
                     </div>
                 </div>
