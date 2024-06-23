@@ -1,0 +1,86 @@
+/* Đảm bảo rằng toàn bộ trang có chiều cao 100% */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Bao quanh phần tử chính */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Nội dung chính của trang */
+.main-content {
+    flex: 1;
+}
+
+/* Đặt footer xuống cuối trang */
+footer {
+    margin-top: auto;
+}
+
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: calc(50% - 40px);
+    max-width: 600px;
+    text-align: left;
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.category-content {
+    flex: 1;
+    text-align: left;
+    padding-top: 10px;
+}
+
+.category-content h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.category-content ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-content li {
+    margin-bottom: 5px;
+}
+
+.category-content a {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}

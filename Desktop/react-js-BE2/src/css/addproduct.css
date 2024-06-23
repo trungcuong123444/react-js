@@ -1,0 +1,26 @@
+.addproduct-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.addproduct-container h2 {
+    margin-bottom: 20px;
+}
+
+.addproduct-container form input,
+.addproduct-container form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.addproduct-container form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}

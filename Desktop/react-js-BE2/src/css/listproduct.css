@@ -1,0 +1,60 @@
+/* Overall container for the product list */
+.listproduct-container {
+    width: 80%; /* Adjust width as needed */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add some padding for spacing */
+    border: 1px solid #ddd; /* Optional border for visual separation */
+    border-radius: 5px; /* Optional rounded corners */
+  }
+  
+  /* Heading for the product list */
+  .listproduct-container h2 {
+    text-align: center; /* Center the heading text */
+    margin-bottom: 20px; /* Add some space after the heading */
+  }
+  
+  /* Container for individual product items */
+  .product-list {
+    display: flex; /* Arrange products in a row */
+    flex-wrap: wrap; /* Allow items to wrap onto multiple lines if needed */
+    justify-content: space-between; /* Distribute products evenly */
+    /* Optional: Add some padding/margin for spacing between products */
+  }
+  
+  /* Styling for individual product elements */
+  .product {
+    width: calc(33% - 20px); /* Set width based on desired number of products per row */
+    /* Adjust margin for spacing between products */
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #eee; /* Optional border */
+    border-radius: 5px; /* Optional rounded corners */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+    text-align: center; /* Center product details */
+  }
+  
+  .product img {
+    width: 100%; /* Display image at full width of product container */
+    /* Adjust height if needed */
+    object-fit: cover; /* Ensure image fills the space and maintains aspect ratio */
+    margin-bottom: 10px; /* Add some space after the image */
+  }
+  
+  .product h3 {
+    font-size: 18px; /* Adjust font size as desired */
+    margin-bottom: 5px; /* Add some space after the product name */
+  }
+  
+  .product p {
+    margin-bottom: 5px; /* Add some space between product details */
+  }
+  
+  .product a {
+    color: dodgerblue; /* Change color as desired */
+    text-decoration: none; /* Remove underline initially */
+  }
+  
+  .product a:hover {
+    text-decoration: underline; /* Underline link on hover */
+  }
+  
