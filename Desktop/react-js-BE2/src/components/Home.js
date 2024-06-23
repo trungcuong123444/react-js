@@ -18,10 +18,21 @@ const Home = () => {
     const [catalogs, setCatalogs] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
+    const [features, setFeatures] = useState({
+        waitlist: false,
+        openSource: false,
+        mobileApp: false,
+        discordCommunity: false,
+        api: false,
+        noSignupRequired: false,
+        browserExtension: false,
+    });
 
     useEffect(() => {
         fetchProducts();
         fetchCatalogs();
+        
+            
     }, []);
 
     useEffect(() => {
@@ -45,6 +56,9 @@ const Home = () => {
     }, [navigate]);
 
     
+    
+
+    
 
     const fetchProducts = async () => {
         try {
@@ -60,6 +74,9 @@ const Home = () => {
         }
     };
 
+
+    
+
     const fetchCatalogs = async () => {
         try {
             const catalogsCollection = collection(db, "catalogs");
@@ -73,14 +90,33 @@ const Home = () => {
         }
     };
 
-    const handleCheckboxChange = (event) => {
-        const { value, checked } = event.target;
-        setSelectedCategories(prevSelectedCategories =>
-            checked
-                ? [...prevSelectedCategories, value]
-                : prevSelectedCategories.filter(category => category !== value)
-        );
+    
+    
+    const handleFeatureChange = (feature) => {
+        setFeatures(prevFeatures => {
+            const updatedFeatures = {
+                ...prevFeatures,
+                [feature]: !prevFeatures[feature],
+            };
+            filterProducts(updatedFeatures);
+            return updatedFeatures;
+        });
     };
+
+    const filterProducts = (updatedFeatures) => {
+        const filtered = products.filter(product => {
+            if (!product.features) return false; // Skip products without features field
+            for (let key in updatedFeatures) {
+                if (updatedFeatures[key] && !product.features[key]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        setFilteredProducts(filtered);
+    };
+    
+
 
     const handleLogout = async () => {
         await signOut(auth);
@@ -237,26 +273,67 @@ const Home = () => {
             </section>
 
             <section className="filters">
-                <div className="container">
-                    <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {/* Toggle button to show/hide checkboxes */}
-                    {showFilters && (
-                        <div>
-                            <h2>Filter by Category</h2>
-                            {catalogs.map(catalog => (
-                                <div key={catalog.id}>
-                                    <input
-                                        type="checkbox"
-                                        id={catalog.name}
-                                        value={catalog.name}
-                                        onChange={handleCheckboxChange}
-                                    />
-                                    <label htmlFor={catalog.name}>{catalog.name}</label>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </section>
+    <div className="container">
+        <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {/* Toggle button to show/hide checkboxes */}
+        {showFilters && (
+            <div className="features">
+                <h2>Filter by Features</h2>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.waitlist}
+                        onChange={() => handleFeatureChange('waitlist')}
+                    /> Waitlist
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.openSource}
+                        onChange={() => handleFeatureChange('openSource')}
+                    /> Open Source
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.mobileApp}
+                        onChange={() => handleFeatureChange('mobileApp')}
+                    /> Mobile App
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.discordCommunity}
+                        onChange={() => handleFeatureChange('discordCommunity')}
+                    /> Discord Community
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.api}
+                        onChange={() => handleFeatureChange('api')}
+                    /> API
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.noSignupRequired}
+                        onChange={() => handleFeatureChange('noSignupRequired')}
+                    /> No Signup Required
+                </label>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={features.browserExtension}
+                        onChange={() => handleFeatureChange('browserExtension')}
+                    /> Browser Extension
+                </label>
+            </div>
+        )}
+    </div>
+</section>
+
+
+            
 
             <section className="user-products">
                 <div className="container">
