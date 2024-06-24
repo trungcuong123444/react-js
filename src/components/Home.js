@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, Timestamp, orderBy } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faFire, faClock, faFilter, faCheckCircle, faEye } from "@fortawesome/free-solid-svg-icons";
@@ -35,7 +35,7 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const q = query(collection(db, "products"), where("status", "==", "approved"));
+                const q = query(collection(db, "products"),  orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
                 const productsData = querySnapshot.docs.map(doc => ({
                     id: doc.id,
@@ -73,6 +73,10 @@ const Home = () => {
     };
 
     const filterProducts = (type, productsData) => {
+        const now = Timestamp.now().toDate();
+        const threeDaysAgo = new Date(now);
+        threeDaysAgo.setDate(now.getDate() - 3);
+
         switch (type) {
             case "featured":
                 setFilteredProducts(productsData.filter(product => product.featured));
@@ -81,7 +85,7 @@ const Home = () => {
                 setFilteredProducts(productsData.filter(product => product.popular));
                 break;
             case "new":
-                setFilteredProducts(productsData.filter(product => product.new));
+                setFilteredProducts(productsData.filter(product => product.createdAt.toDate() > threeDaysAgo));
                 break;
             case "all":
                 setFilteredProducts(productsData); // Assuming "all" should show all products
