@@ -1,10 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
-import { collection, getDocs, query, Timestamp, orderBy } from "firebase/firestore";
+import {
+    collection,
+    getDocs,
+    query,
+    Timestamp,
+    orderBy,
+    doc,
+    getDoc,
+    updateDoc,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faFire, faClock, faFilter, faCheckCircle, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+    faStar,
+    faFire,
+    faClock,
+    faFilter,
+    faCheckCircle,
+    faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import "../css/Home.css";
 
 const Home = () => {
@@ -15,6 +31,7 @@ const Home = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [view, setView] = useState(true);
     const [filterType, setFilterType] = useState("featured"); // Default filter type
+    const [clickCounts, setClickCounts] = useState({}); // Track click counts
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -35,13 +52,29 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const q = query(collection(db, "products"),  orderBy('createdAt', 'desc'));
+                const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
-                const productsData = querySnapshot.docs.map(doc => ({
+                const productsData = querySnapshot.docs.map((doc) => ({
                     id: doc.id,
-                    ...doc.data()
+                    ...doc.data(),
                 }));
+
+                // Fetch click counts from Firestore
+                const clickCountsData = {};
+                await Promise.all(
+                    productsData.map(async (product) => {
+                        const productRef = doc(db, "products", product.id);
+                        const productDoc = await getDoc(productRef);
+                        if (productDoc.exists()) {
+                            clickCountsData[product.id] = productDoc.data().clickCount || 0;
+                        } else {
+                            clickCountsData[product.id] = 0;
+                        }
+                    })
+                );
+
                 setProducts(productsData);
+                setClickCounts(clickCountsData); // Set click counts state
                 filterProducts(filterType, productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -65,7 +98,7 @@ const Home = () => {
     };
 
     const toggleView = () => {
-        setView(prevView => !prevView);
+        setView((prevView) => !prevView);
     };
 
     const handleFilterChange = (filter) => {
@@ -79,13 +112,21 @@ const Home = () => {
 
         switch (type) {
             case "featured":
-                setFilteredProducts(productsData.filter(product => product.featured));
+                setFilteredProducts(productsData.filter((product) => product.featured));
                 break;
             case "popular":
-                setFilteredProducts(productsData.filter(product => product.popular));
+                // Sort products by click count in descending order
+                const sortedProducts = productsData.sort((a, b) => {
+                    const clicksA = clickCounts[a.id] || 0;
+                    const clicksB = clickCounts[b.id] || 0;
+                    return clicksB - clicksA;
+                });
+                setFilteredProducts(sortedProducts);
                 break;
             case "new":
-                setFilteredProducts(productsData.filter(product => product.createdAt.toDate() > threeDaysAgo));
+                setFilteredProducts(
+                    productsData.filter((product) => product.createdAt.toDate() > threeDaysAgo)
+                );
                 break;
             case "all":
                 setFilteredProducts(productsData); // Assuming "all" should show all products
@@ -96,6 +137,25 @@ const Home = () => {
         }
     };
 
+    const handleProductClick = async (productId) => {
+        try {
+            const productRef = doc(db, "products", productId);
+            await updateDoc(productRef, {
+                clickCount: (clickCounts[productId] || 0) + 1,
+            });
+
+            // Update local clickCounts state optimistically
+            setClickCounts((prevCounts) => ({
+                ...prevCounts,
+                [productId]: (prevCounts[productId] || 0) + 1,
+            }));
+
+            navigate(`/productinfor/${productId}`);
+        } catch (error) {
+            console.error("Error updating click count:", error);
+        }
+    };
+
     return (
         <div className="home">
             <header>
@@ -103,28 +163,54 @@ const Home = () => {
                     <div className="container">
                         <h1>Futurepedia</h1>
                         <ul>
-                            <li><button onClick={() => navigate("/aitools")}>AI Tools</button></li>
-                            <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>
-                            <li><button onClick={() => navigate("/aitutorials")}>AI Tutorials</button></li>
-                            <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>
+                            <li>
+                                <button onClick={() => navigate("/aitools")}>AI Tools</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aiagents")}>AI Agents</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aitutorials")}>AI Tutorials</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aiinnovations")}>AI Innovations</button>
+                            </li>
                             {user ? (
                                 <li>
                                     <button onClick={toggleDropdown}>More</button>
                                     {dropdownOpen && (
                                         <ul className="dropdown-menu">
-                                            <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
-                                            <li><button onClick={() => navigate("/addcatalog")}>Add Catalog</button></li>
-                                            <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>
-                                            <li><button onClick={() => navigate("/sponsorship-options")}>Sponsorship Options</button></li>
-                                            <li><button onClick={() => navigate("/submit-tool")}>Submit A Tool</button></li>
-                                            <li><button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button></li>
+                                            <li>
+                                                <button onClick={() => navigate("/addproduct")}>Add Product</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/addcatalog")}>Add Catalog</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/userproduct")}>List Products</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/sponsorship-options")}>
+                                                    Sponsorship Options
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/submit-tool")}>Submit A Tool</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button>
+                                            </li>
                                         </ul>
                                     )}
                                 </li>
                             ) : (
                                 <>
-                                    <li><button onClick={() => navigate("/login")}>Login</button></li>
-                                    <li><button onClick={() => navigate("/register")}>Register</button></li>
+                                    <li>
+                                        <button onClick={() => navigate("/login")}>Login</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => navigate("/register")}>Register</button>
+                                    </li>
                                 </>
                             )}
                             {user && <li>Hello, {user.displayName || user.email}</li>}
@@ -191,20 +277,21 @@ const Home = () => {
 
             <section className="products">
                 <div className="container">
-                    <div className={`product-list ${view ? '' : 'vertical-view'}`}>
+                    <div className={`product-list ${view ? "" : "vertical-view"}`}>
                         {filteredProducts.length > 0 ? (
-                            filteredProducts.map(product => (
+                            filteredProducts.map((product) => (
                                 <div className="product" key={product.id}>
                                     <div className="product-header">
                                         <img
                                             src={product.imageUrl}
                                             alt={product.name}
                                             className="product-img"
-                                            onClick={() => navigate(`/productinfor/${product.id}`)}
+                                            onClick={() => handleProductClick(product.id)}
                                         />
                                         <p className="product-name">{product.name}</p>
                                     </div>
                                     <p className="product-description">{product.description}</p>
+                                    <p>Click count: {clickCounts[product.id] || 0}</p>
                                     <button onClick={() => window.open(product.link, "_blank")}>Visit</button>
                                 </div>
                             ))
