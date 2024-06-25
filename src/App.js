@@ -31,7 +31,7 @@ function MainContent() {
 
   useEffect(() => {
     const footer = document.getElementById('main-footer');
-    if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/checkproduct') || location.pathname.startsWith('/listproduct') || location.pathname.startsWith('/updateproduct') || location.pathname.startsWith('/userproduct') || location.pathname.startsWith('/addproduct') || location.pathname.startsWith('/addcatalog')) {
+    if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/checkproduct') || location.pathname.startsWith('/listproduct') || location.pathname.startsWith('/updateproduct') || location.pathname.startsWith('/userproduct') || location.pathname.startsWith('/addproduct') || location.pathname.startsWith('/addcatalog')) {
       if (footer) footer.style.display = 'none';
     } else {
       if (footer) footer.style.display = 'block';

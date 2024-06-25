@@ -1,15 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../firebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { db, auth } from "../firebaseConfig";
+import { collection, getDocs, query, where, updateDoc,doc } from "firebase/firestore";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../css/Home.css";
 
 const Home = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [filterCategory, setFilterCategory] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [items, setItems] = useState([]);
+    const [catalogs, setCatalogs] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [showFilters, setShowFilters] = useState(false);
+    const [features, setFeatures] = useState({
+        waitlist: false,
+        openSource: false,
+        mobileApp: false,
+        discordCommunity: false,
+        api: false,
+        noSignupRequired: false,
+        browserExtension: false,
+    });
+
+    useEffect(() => {
+        fetchProducts();
+        fetchCatalogs();
+        
+            
+    }, []);
+
+    useEffect(() => {
+        setFilteredProducts(products);
+    }, [products]); 
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -27,23 +55,68 @@ const Home = () => {
         return () => unsubscribe();
     }, [navigate]);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const q = query(collection(db, "products"), where("status", "==", "approved"));
-                const querySnapshot = await getDocs(q);
-                const productsData = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setProducts(productsData);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        };
+    
+    
 
-        fetchProducts();
-    }, []);
+    
+
+    const fetchProducts = async () => {
+        try {
+            const productsCollection = collection(db, "products");
+            const q = query(productsCollection);
+
+            const querySnapshot = await getDocs(q);
+            const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProducts(productsData);
+            setFilteredProducts(productsData);
+        } catch (error) {
+            console.error("Error fetching products: ", error);
+        }
+    };
+
+
+    
+
+    const fetchCatalogs = async () => {
+        try {
+            const catalogsCollection = collection(db, "catalogs");
+            const q = query(catalogsCollection);
+
+            const querySnapshot = await getDocs(q);
+            const catalogsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setCatalogs(catalogsData);
+        } catch (error) {
+            console.error("Error fetching catalogs: ", error);
+        }
+    };
+
+    
+    
+    const handleFeatureChange = (feature) => {
+        setFeatures(prevFeatures => {
+            const updatedFeatures = {
+                ...prevFeatures,
+                [feature]: !prevFeatures[feature],
+            };
+            filterProducts(updatedFeatures);
+            return updatedFeatures;
+        });
+    };
+
+    const filterProducts = (updatedFeatures) => {
+        const filtered = products.filter(product => {
+            if (!product.features) return false; // Skip products without features field
+            for (let key in updatedFeatures) {
+                if (updatedFeatures[key] && !product.features[key]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        setFilteredProducts(filtered);
+    };
+    
+
 
     const handleLogout = async () => {
         await signOut(auth);
@@ -53,6 +126,55 @@ const Home = () => {
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
+
+    const handleFilterCategory = (category) => {
+        setFilterCategory(category);
+        if (category === "") {
+            setFilteredProducts(products);
+        } else {
+            const filtered = products.filter(product => product.category === category);
+            setFilteredProducts(filtered);
+        }
+    };
+
+    const handleSearch = () => {
+        const searchTermLower = searchTerm.toLowerCase();
+        const filtered = products.filter(product =>
+            product.name.toLowerCase().includes(searchTermLower)
+        );
+        setFilteredProducts(filtered);
+    };
+
+    const showAllProducts = () => {
+        setFilteredProducts(products);
+    };
+
+    const filterItems = (catItem) => {
+        const filtered = products.filter((product) => product.category === catItem);
+        setFilteredProducts(filtered);
+    };
+      const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleSearch();
+        }
+    };
+
+   
+
+    useEffect(() => {
+        console.log('Selected Categories:', selectedCategories);
+        if (selectedCategories.length === 0) {
+            setFilteredProducts(products);
+        } else {
+            const filtered = products.filter(product =>
+                selectedCategories.includes(product.category)
+            );
+            setFilteredProducts(filtered);
+        }
+        console.log('Filtered Products:', filteredProducts);
+    }, [selectedCategories, products]);
+    
 
     return (
         <div className="home">
@@ -94,26 +216,69 @@ const Home = () => {
                     <h1>Discover what AI can do for you</h1>
                     <p>We've helped professionals learn to leverage AI by helping them find the best AI tools.</p>
                     <div className="search-bar">
-                        <input type="text" placeholder="Enter a tool name or use case..." />
-                        <button>Search AI Tools</button>
+                        <input type="text" placeholder="Enter a tool name or use case..."
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        onKeyPress={handleKeyPress}
+                         />
+                        <button onClick={handleSearch}>Search AI Tools</button>
                     </div>
                 </div>
             </section>
 
             <section className="tags">
                 <div className="button-container">
-                    <button>Marketing</button>
-                    <button>Productivity</button>
-                    <button>Design</button>
-                    <button>Video</button>
-                    <button>Research</button>
-                    <button>All Categories</button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => filterItems("Marketing")}
+                 >
+                    Marketing
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => filterItems("Productivity")}
+                 >
+                    Productivity
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => filterItems("Design")}
+                >
+                    Design
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => filterItems("Video")}
+                >
+                    Video
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => filterItems("Research"   )}
+                >
+                    Research
+            </button>
+                <button
+                    type="button"
+                    className="btn btn-danger me-3 mb-3"
+                    onClick={() => setItems(showAllProducts)}
+                >
+                    All Categories
+                </button>
                 </div>
             </section>
-            <div className="container">
-                <div className="breadcrumb-container">
+
+            <section className="filters">
+    <div className="container">
+        <div className="breadcrumb-container">
                 <ul class="nav">
                     <li class="nav-item">
+
+
                         <a class="nav-link active" href="#">Featured</a>
                     </li>
                     <li class="nav-item">
@@ -122,21 +287,78 @@ const Home = () => {
                     <li class="nav-item">
                         <a class="nav-link" href="#">New</a>
                     </li>
+                    <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {/* Toggle button to show/hide checkboxes */}
+                        {showFilters && (
+                            <div className="features">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.waitlist}
+                                        onChange={() => handleFeatureChange('waitlist')}
+                                    /> Waitlist
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.openSource}
+                                        onChange={() => handleFeatureChange('openSource')}
+                                    /> Open Source
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.mobileApp}
+                                        onChange={() => handleFeatureChange('mobileApp')}
+                                    /> Mobile App
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.discordCommunity}
+                                        onChange={() => handleFeatureChange('discordCommunity')}
+                                    /> Discord Community
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.api}
+                                        onChange={() => handleFeatureChange('api')}
+                                    /> API
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.noSignupRequired}
+                                        onChange={() => handleFeatureChange('noSignupRequired')}
+                                    /> No Signup Required
+                                </label>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={features.browserExtension}
+                                        onChange={() => handleFeatureChange('browserExtension')}
+                                    /> Browser Extension
+                                </label>
+                            </div>
+                        )}
                     </ul>
-                </div>
-                {/* Các phần tử khác */}
-            </div>
-            <section className="products">
+                </div>       
+         </div>
+</section>
+            <section className="user-products">
                 <div className="container">
                     <h2>Featured Products</h2>
                     <div className="product-list">
-                        {products.length > 0 ? (
-                            products.map(product => (
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map(product => (
                                 <div className="product" key={product.id}>
                                     <div className="product-header">
+                                    <h4>{product.name}</h4>
+                                    
                                         <img
                                             src={product.imageUrl}
                                             alt={product.name}
+                                            style={{ width: "100px" }}
                                             className="product-img"
                                             onClick={() => navigate(`/productinfor/${product.id}`)}
                                         />
@@ -150,14 +372,6 @@ const Home = () => {
                             <p>No approved products available</p>
                         )}
                     </div>
-                </div>
-            </section>
-            <section class="Video">
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="embed-responsive-item1" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
-                   
-                    <iframe class="embed-responsive-item2" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
-             
                 </div>
             </section>
         </div>

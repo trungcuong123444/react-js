@@ -3,6 +3,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../firebaseConfig";
 import { useParams, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const UpdateProduct = () => {
     const { productId } = useParams();
@@ -72,6 +73,14 @@ const UpdateProduct = () => {
 
     return (
         <div className="auth-container">
+            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '25%' }}>
+                <h3 className="w3-bar-item">Admin</h3>
+                <Link to="/" className="w3-bar-item w3-button">Home</Link>
+                <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
+                <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
+                <Link to="/updateproduct" className="w3-bar-item w3-button">UpdateProduct</Link>
+                <a href="#" className="w3-bar-item w3-button">Phân Quyền</a>
+            </div>
             <h2>Update Product</h2>
             <form onSubmit={handleUpdate}>
                 <input
