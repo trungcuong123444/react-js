@@ -11,6 +11,7 @@ const Admin = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        
         const fetchUsers = async () => {
             try {
                 const usersSnapshot = await getDocs(collection(db, "users"));
@@ -57,11 +58,7 @@ const Admin = () => {
                 <Link to="/listproduct" className="w3-bar-item w3-button">UpdateProduct</Link>
                 <a href="#" className="w3-bar-item w3-button">Phân Quyền</a>
 
-                <h3 className="w3-bar-item">Doanh Nghiệp</h3>
                 
-                <Link to="/userproduct" className="w3-bar-item w3-button">UserProduct</Link>
-                <Link to="/addproduct" className="w3-bar-item w3-button">Addproduct</Link>
-                <Link to="/addcatalog" className="w3-bar-item w3-button">Addcatalog</Link>
               
             </div>
         

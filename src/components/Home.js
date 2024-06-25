@@ -24,14 +24,14 @@ import {
 import "../css/Home.css";
 
 const Home = () => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [view, setView] = useState(true);
-    const [filterType, setFilterType] = useState("featured"); // Default filter type
-    const [clickCounts, setClickCounts] = useState({}); // Track click counts
+    const navigate = useNavigate(); 
+    const [user, setUser] = useState(null); // Lưu trữ thông tin người dùng hiện tại.
+    const [products, setProducts] = useState([]); // products: Mảng chứa tất cả các sản phẩm từ Firestore.
+    const [filteredProducts, setFilteredProducts] = useState([]); // filteredProducts: Mảng chứa sản phẩm được lọc theo filterType.
+    const [dropdownOpen, setDropdownOpen] = useState(false);// dropdownOpen: Trạng thái của dropdown menu.
+    const [view, setView] = useState(true); // view: Trạng thái hiển thị danh sách sản phẩm (ngang hoặc dọc).
+    const [filterType, setFilterType] = useState("featured"); // filterType: Loại bộ lọc hiện tại (mặc định là "featured").
+    const [clickCounts, setClickCounts] = useState({}); // clickCounts: Đếm số lần click cho từng sản phẩm để xác định độ phổ biến.
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -241,7 +241,7 @@ const Home = () => {
                     <button onClick={() => handleFilterChange("all")}>All Categories</button>
                 </div>
             </section>
-
+            {/* Phần Breadcrumb và Bộ Lọc */}
             <div className="container">
                 <div className="breadcrumb-container">
                     <ul className="nav">
@@ -274,7 +274,7 @@ const Home = () => {
                     </button>
                 </div>
             </div>
-
+{/* // Phần Hiển Thị Sản Phẩm // */}
             <section className="products">
                 <div className="container">
                     <div className={`product-list ${view ? "" : "vertical-view"}`}>

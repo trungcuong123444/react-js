@@ -120,3 +120,6 @@ element.style {
 .w3-sidebar a:hover {
     background-color: #ccc; /* Màu nền khi hover */
 }
+admin-page footer {
+    display: none;
+}
