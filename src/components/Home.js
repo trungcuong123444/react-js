@@ -1,43 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { db, auth } from "../firebaseConfig";
-import { collection, getDocs, query, where, updateDoc,doc } from "firebase/firestore";
-import { useNavigate, useLocation } from "react-router-dom";
+import { auth, db } from "../firebaseConfig";
+import {
+    collection,
+    getDocs,
+    query,
+    Timestamp,
+    orderBy,
+    doc,
+    getDoc,
+    updateDoc,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faStar,
+    faFire,
+    faClock,
+    faFilter,
+    faCheckCircle,
+    faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import "../css/Home.css";
 
 const Home = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [user, setUser] = useState(null);
-    const [products, setProducts] = useState([]);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [filterCategory, setFilterCategory] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [items, setItems] = useState([]);
-    const [catalogs, setCatalogs] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [showFilters, setShowFilters] = useState(false);
-    const [features, setFeatures] = useState({
-        waitlist: false,
-        openSource: false,
-        mobileApp: false,
-        discordCommunity: false,
-        api: false,
-        noSignupRequired: false,
-        browserExtension: false,
-    });
-
-    useEffect(() => {
-        fetchProducts();
-        fetchCatalogs();
-        
-            
-    }, []);
-
-    useEffect(() => {
-        setFilteredProducts(products);
-    }, [products]); 
+    const navigate = useNavigate(); 
+    const [user, setUser] = useState(null); // Lưu trữ thông tin người dùng hiện tại.
+    const [products, setProducts] = useState([]); // products: Mảng chứa tất cả các sản phẩm từ Firestore.
+    const [filteredProducts, setFilteredProducts] = useState([]); // filteredProducts: Mảng chứa sản phẩm được lọc theo filterType.
+    const [dropdownOpen, setDropdownOpen] = useState(false);// dropdownOpen: Trạng thái của dropdown menu.
+    const [view, setView] = useState(true); // view: Trạng thái hiển thị danh sách sản phẩm (ngang hoặc dọc).
+    const [filterType, setFilterType] = useState("featured"); // filterType: Loại bộ lọc hiện tại (mặc định là "featured").
+    const [clickCounts, setClickCounts] = useState({}); // clickCounts: Đếm số lần click cho từng sản phẩm để xác định độ phổ biến.
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -55,126 +49,112 @@ const Home = () => {
         return () => unsubscribe();
     }, [navigate]);
 
-    
-    
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                const productsData = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
 
-    
+                // Fetch click counts from Firestore
+                const clickCountsData = {};
+                await Promise.all(
+                    productsData.map(async (product) => {
+                        const productRef = doc(db, "products", product.id);
+                        const productDoc = await getDoc(productRef);
+                        if (productDoc.exists()) {
+                            clickCountsData[product.id] = productDoc.data().clickCount || 0;
+                        } else {
+                            clickCountsData[product.id] = 0;
+                        }
+                    })
+                );
 
-    const fetchProducts = async () => {
-        try {
-            const productsCollection = collection(db, "products");
-            const q = query(productsCollection);
-
-            const querySnapshot = await getDocs(q);
-            const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProducts(productsData);
-            setFilteredProducts(productsData);
-        } catch (error) {
-            console.error("Error fetching products: ", error);
-        }
-    };
-
-
-    
-
-    const fetchCatalogs = async () => {
-        try {
-            const catalogsCollection = collection(db, "catalogs");
-            const q = query(catalogsCollection);
-
-            const querySnapshot = await getDocs(q);
-            const catalogsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setCatalogs(catalogsData);
-        } catch (error) {
-            console.error("Error fetching catalogs: ", error);
-        }
-    };
-
-    
-    
-    const handleFeatureChange = (feature) => {
-        setFeatures(prevFeatures => {
-            const updatedFeatures = {
-                ...prevFeatures,
-                [feature]: !prevFeatures[feature],
-            };
-            filterProducts(updatedFeatures);
-            return updatedFeatures;
-        });
-    };
-
-    const filterProducts = (updatedFeatures) => {
-        const filtered = products.filter(product => {
-            if (!product.features) return false; // Skip products without features field
-            for (let key in updatedFeatures) {
-                if (updatedFeatures[key] && !product.features[key]) {
-                    return false;
-                }
+                setProducts(productsData);
+                setClickCounts(clickCountsData); // Set click counts state
+                filterProducts(filterType, productsData);
+            } catch (error) {
+                console.error("Error fetching products:", error);
             }
-            return true;
-        });
-        setFilteredProducts(filtered);
-    };
-    
+        };
 
+        fetchProducts();
+    }, [filterType]);
 
     const handleLogout = async () => {
-        await signOut(auth);
-        setUser(null);
+        try {
+            await signOut(auth);
+            setUser(null);
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     };
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
 
-    const handleFilterCategory = (category) => {
-        setFilterCategory(category);
-        if (category === "") {
-            setFilteredProducts(products);
-        } else {
-            const filtered = products.filter(product => product.category === category);
-            setFilteredProducts(filtered);
+    const toggleView = () => {
+        setView((prevView) => !prevView);
+    };
+
+    const handleFilterChange = (filter) => {
+        setFilterType(filter);
+    };
+
+    const filterProducts = (type, productsData) => {
+        const now = Timestamp.now().toDate();
+        const threeDaysAgo = new Date(now);
+        threeDaysAgo.setDate(now.getDate() - 3);
+
+        switch (type) {
+            case "featured":
+                setFilteredProducts(productsData.filter((product) => product.featured));
+                break;
+            case "popular":
+                // Sort products by click count in descending order
+                const sortedProducts = productsData.sort((a, b) => {
+                    const clicksA = clickCounts[a.id] || 0;
+                    const clicksB = clickCounts[b.id] || 0;
+                    return clicksB - clicksA;
+                });
+                setFilteredProducts(sortedProducts);
+                break;
+            case "new":
+                setFilteredProducts(
+                    productsData.filter((product) => product.createdAt.toDate() > threeDaysAgo)
+                );
+                break;
+            case "all":
+                setFilteredProducts(productsData); // Assuming "all" should show all products
+                break;
+            default:
+                setFilteredProducts(productsData);
+                break;
         }
     };
 
-    const handleSearch = () => {
-        const searchTermLower = searchTerm.toLowerCase();
-        const filtered = products.filter(product =>
-            product.name.toLowerCase().includes(searchTermLower)
-        );
-        setFilteredProducts(filtered);
-    };
+    const handleProductClick = async (productId) => {
+        try {
+            const productRef = doc(db, "products", productId);
+            await updateDoc(productRef, {
+                clickCount: (clickCounts[productId] || 0) + 1,
+            });
 
-    const showAllProducts = () => {
-        setFilteredProducts(products);
-    };
+            // Update local clickCounts state optimistically
+            setClickCounts((prevCounts) => ({
+                ...prevCounts,
+                [productId]: (prevCounts[productId] || 0) + 1,
+            }));
 
-    const filterItems = (catItem) => {
-        const filtered = products.filter((product) => product.category === catItem);
-        setFilteredProducts(filtered);
-    };
-      const handleKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            handleSearch();
+            navigate(`/productinfor/${productId}`);
+        } catch (error) {
+            console.error("Error updating click count:", error);
         }
     };
-
-   
-
-    useEffect(() => {
-        console.log('Selected Categories:', selectedCategories);
-        if (selectedCategories.length === 0) {
-            setFilteredProducts(products);
-        } else {
-            const filtered = products.filter(product =>
-                selectedCategories.includes(product.category)
-            );
-            setFilteredProducts(filtered);
-        }
-        console.log('Filtered Products:', filteredProducts);
-    }, [selectedCategories, products]);
-    
 
     return (
         <div className="home">
@@ -183,29 +163,58 @@ const Home = () => {
                     <div className="container">
                         <h1>Futurepedia</h1>
                         <ul>
-                            <li><button onClick={() => navigate("/aitools")}>AI Tools</button></li>
-                            <li><button onClick={() => navigate("/aiagents")}>AI Agents</button></li>
-                            <li><button onClick={() => navigate("/aitutorials")}>AI Tutorials</button></li>
-                            <li><button onClick={() => navigate("/aiinnovations")}>AI Innovations</button></li>
-                            {user && (
+                            <li>
+                                <button onClick={() => navigate("/aitools")}>AI Tools</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aiagents")}>AI Agents</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aitutorials")}>AI Tutorials</button>
+                            </li>
+                            <li>
+                                <button onClick={() => navigate("/aiinnovations")}>AI Innovations</button>
+                            </li>
+                            {user ? (
                                 <li>
                                     <button onClick={toggleDropdown}>More</button>
                                     {dropdownOpen && (
                                         <ul className="dropdown-menu">
-                                            <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
-                                            <li><button onClick={() => navigate("/addcatalog")}>Add Catalog</button></li>
-                                            <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>
-                                            <li><button onClick={() => navigate("/sponsorship-options")}>Sponsorship Options</button></li>
-                                            <li><button onClick={() => navigate("/submit-tool")}>Submit A Tool</button></li>
-                                            <li><button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button></li>
+                                            <li>
+                                                <button onClick={() => navigate("/addproduct")}>Add Product</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/addcatalog")}>Add Catalog</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/userproduct")}>List Products</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/sponsorship-options")}>
+                                                    Sponsorship Options
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/submit-tool")}>Submit A Tool</button>
+                                            </li>
+                                            <li>
+                                                <button onClick={() => navigate("/youtube-channel")}>YouTube Channel</button>
+                                            </li>
                                         </ul>
                                     )}
                                 </li>
+                            ) : (
+                                <>
+                                    <li>
+                                        <button onClick={() => navigate("/login")}>Login</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => navigate("/register")}>Register</button>
+                                    </li>
+                                </>
                             )}
                             {user && <li>Hello, {user.displayName || user.email}</li>}
                             {user && <li><button onClick={handleLogout}>Logout</button></li>}
-                            {!user && <li><button onClick={() => navigate("/login")}>Login</button></li>}
-                            {!user && <li><button onClick={() => navigate("/register")}>Register</button></li>}
                         </ul>
                     </div>
                 </nav>
@@ -216,160 +225,78 @@ const Home = () => {
                     <h1>Discover what AI can do for you</h1>
                     <p>We've helped professionals learn to leverage AI by helping them find the best AI tools.</p>
                     <div className="search-bar">
-                        <input type="text" placeholder="Enter a tool name or use case..."
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                        onKeyPress={handleKeyPress}
-                         />
-                        <button onClick={handleSearch}>Search AI Tools</button>
+                        <input type="text" placeholder="Enter a tool name or use case..." />
+                        <button>Search AI Tools</button>
                     </div>
                 </div>
             </section>
 
             <section className="tags">
                 <div className="button-container">
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => filterItems("Marketing")}
-                 >
-                    Marketing
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => filterItems("Productivity")}
-                 >
-                    Productivity
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => filterItems("Design")}
-                >
-                    Design
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => filterItems("Video")}
-                >
-                    Video
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => filterItems("Research"   )}
-                >
-                    Research
-            </button>
-                <button
-                    type="button"
-                    className="btn btn-danger me-3 mb-3"
-                    onClick={() => setItems(showAllProducts)}
-                >
-                    All Categories
-                </button>
+                    <button onClick={() => handleFilterChange("marketing")}>Marketing</button>
+                    <button onClick={() => handleFilterChange("productivity")}>Productivity</button>
+                    <button onClick={() => handleFilterChange("design")}>Design</button>
+                    <button onClick={() => handleFilterChange("video")}>Video</button>
+                    <button onClick={() => handleFilterChange("research")}>Research</button>
+                    <button onClick={() => handleFilterChange("all")}>All Categories</button>
                 </div>
             </section>
-
-            <section className="filters">
-    <div className="container">
-        <div className="breadcrumb-container">
-                <ul class="nav">
-                    <li class="nav-item">
-
-
-                        <a class="nav-link active" href="#">Featured</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Popular</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">New</a>
-                    </li>
-                    <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {/* Toggle button to show/hide checkboxes */}
-                        {showFilters && (
-                            <div className="features">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.waitlist}
-                                        onChange={() => handleFeatureChange('waitlist')}
-                                    /> Waitlist
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.openSource}
-                                        onChange={() => handleFeatureChange('openSource')}
-                                    /> Open Source
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.mobileApp}
-                                        onChange={() => handleFeatureChange('mobileApp')}
-                                    /> Mobile App
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.discordCommunity}
-                                        onChange={() => handleFeatureChange('discordCommunity')}
-                                    /> Discord Community
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.api}
-                                        onChange={() => handleFeatureChange('api')}
-                                    /> API
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.noSignupRequired}
-                                        onChange={() => handleFeatureChange('noSignupRequired')}
-                                    /> No Signup Required
-                                </label>
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        checked={features.browserExtension}
-                                        onChange={() => handleFeatureChange('browserExtension')}
-                                    /> Browser Extension
-                                </label>
-                            </div>
-                        )}
+            {/* Phần Breadcrumb và Bộ Lọc */}
+            <div className="container">
+                <div className="breadcrumb-container">
+                    <ul className="nav">
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "featured" ? "active" : ""}`} onClick={() => handleFilterChange("featured")}>
+                                <FontAwesomeIcon icon={faStar} /> Featured
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "popular" ? "active" : ""}`} onClick={() => handleFilterChange("popular")}>
+                                <FontAwesomeIcon icon={faFire} /> Popular
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a className={`nav-link ${filterType === "new" ? "active" : ""}`} onClick={() => handleFilterChange("new")}>
+                                <FontAwesomeIcon icon={faClock} /> New
+                            </a>
+                        </li>
                     </ul>
-                </div>       
-         </div>
-</section>
-            <section className="user-products">
+
+                    <hr />
+                    <button className="filters-button" onClick={() => handleFilterChange("Filters")}>
+                        <FontAwesomeIcon icon={faFilter} /> Filters
+                    </button>
+                    <button className="verified-button" onClick={() => handleFilterChange("Verified")}>
+                        <FontAwesomeIcon icon={faCheckCircle} /> Verified
+                    </button>
+                    <button className="switch-button" onClick={toggleView}>
+                        <FontAwesomeIcon icon={faEye} /> {view ? " View" : " View1"}
+                    </button>
+                </div>
+            </div>
+{/* // Phần Hiển Thị Sản Phẩm // */}
+            <section className="products">
                 <div className="container">
-                    <h2>Featured Products</h2>
-                    <div className="product-list">
+                    <div className={`product-list ${view ? "" : "vertical-view"}`}>
                         {filteredProducts.length > 0 ? (
-                            filteredProducts.map(product => (
+                            filteredProducts.map((product) => (
                                 <div className="product" key={product.id}>
                                     <div className="product-header">
-                                    <h4>{product.name}</h4>
-                                    
                                         <img
                                             src={product.imageUrl}
                                             alt={product.name}
-                                            style={{ width: "100px" }}
                                             className="product-img"
-                                            onClick={() => navigate(`/productinfor/${product.id}`)}
+                                            onClick={() => handleProductClick(product.id)}
                                         />
                                         <p className="product-name">{product.name}</p>
                                     </div>
                                     <p className="product-description">{product.description}</p>
+                                    <p>Click count: {clickCounts[product.id] || 0}</p>
                                     <button onClick={() => window.open(product.link, "_blank")}>Visit</button>
                                 </div>
                             ))
                         ) : (
-                            <p>No approved products available</p>
+                            <p>No products available</p>
                         )}
                     </div>
                 </div>
