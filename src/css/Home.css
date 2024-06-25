@@ -165,9 +165,18 @@ header ul li button:hover {
     height: auto;
     margin-right: 10px; /* Space between the logo and the h1 text */
 }
+.features label{
+    background: #cfd4db;
+    border-radius: 13px;
+    margin-left: 15px;
+}
 
 .tags button:hover {
     background-color: #0056b3;
+}
+button filter{
+    border-radius: 12px;
+    background-color: #1e90ff;
 }
 
 .products .container {
@@ -197,6 +206,16 @@ header ul li button:hover {
     margin-bottom: 30px;
     font-size: 2em;
     color: #333;
+    
+   
+}
+.container h2 {
+    margin-bottom: 30px;
+    text-align: right;
+    font-size: 2em;
+    color: #8a2424;
+    animation: scroll 20s linear infinite;
+   
 }
 
 .product-list {
@@ -233,6 +252,7 @@ header ul li button:hover {
     font-size: 1.2em;
     margin: 10px 0;
     color: #333;
+    
 }
 
 .product p {
@@ -326,5 +346,16 @@ footer .copyright {
 .Video {
     display: flex;
     justify-content: space-between; /* Các video sẽ căn cách nhau một khoảng cố định */
-    flex-wrap: wrap; /* Đảm bảo các video chuyển xuống hàng nếu không đủ không gian */
+    flex-wrap: wrap; 
+}
+button, filter {
+    text-align: right;
+}
+@keyframes scroll {/* chạy chữ  animation: scroll 10s linear infinite; */
+    0% {
+        transform: translateX(-200%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }

@@ -3,12 +3,12 @@ import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/fire
 import { db, auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import "../css/userproduct.css"
 const UserProduct = () => {
     const [products, setProducts] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
+    useEffect(() => {       
         const fetchUserProducts = async () => {
             const user = auth.currentUser;
             if (user) {
@@ -33,15 +33,17 @@ const UserProduct = () => {
 
     return (
         <div className="auth-container">
-            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '25%' }}>
-                <h3 className="w3-bar-item">Admin</h3>
+            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '13%' }}>
+                <h3 className="w3-bar-item">Doanh nghiệp</h3>
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/addproduct" className="w3-bar-item w3-button">AddProduct</Link>
                 <Link to="/addcatalog" className="w3-bar-item w3-button">AddCatalog</Link>
                 <Link to="/userproduct" className="w3-bar-item w3-button">UserProduct</Link>
+
             </div>
-            <h2>Your Products</h2>
+            
             <ul>
+            <h2>Your Products</h2>
                 {products.map(product => (
                     <li key={product.id}>
                         <p>Name: {product.name}</p>

@@ -277,17 +277,15 @@ const Home = () => {
         <div className="breadcrumb-container">
                 <ul class="nav">
                     <li class="nav-item">
-
-
-                        <a class="nav-link active" href="#">Featured</a>
+                        <a class="nav-link active" href="#">Active</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Popular</a>
+                        <a class="nav-link" href="#">Link</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">New</a>
+                        <a class="nav-link" href="#">Link</a>
                     </li>
-                    <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {/* Toggle button to show/hide checkboxes */}
+                    <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {}
                         {showFilters && (
                             <div className="features">
                                 <label>
@@ -347,7 +345,7 @@ const Home = () => {
 </section>
             <section className="user-products">
                 <div className="container">
-                    <h2>Featured Products</h2>
+                    <h2>Featured Products</h2> {/*  */}
                     <div className="product-list">
                         {filteredProducts.length > 0 ? (
                             filteredProducts.map(product => (

@@ -1,0 +1,69 @@
+.Addcatalog-container h2{
+    background: rgb(13, 49, 167);
+    margin-left: 14%;
+    border-radius: 10px;
+    color: white;
+    margin-top: 4%;
+    margin-bottom: 4%;
+}  
+.Addcatalog-container h2:hover{
+    border-radius:30px ; /* Thay đổi màu border khi focus */
+    background: #007bff;
+    animation: shake 0.8s ease-in-out;
+}  
+@keyframes shake {
+    10%, 90% {
+        transform: translateX(-1px);
+    }
+    20%, 80% {
+        transform: translateX(2px);
+    }
+    30%, 50%, 70% {
+        transform: translateX(-4px);
+    }
+    40%, 60% {
+        transform: translateX(4px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+.Addcatalog-container button{
+    background: #007bff;
+    border-radius: 10px;
+    height: 40px;
+}
+.Addcatalog-container button :focus{
+    background: #4a96e7;
+    border-radius: 15px;
+}
+.Addcatalog-container input{
+    width: 50%;
+    height: 40px;
+}
+.Addcatalog-container h3{
+    background: rgb(13, 49, 167);
+    margin-left: 14%;
+    border-radius: 10px;
+    color: white;
+    margin-top: 4%;
+    margin-bottom: 4%;
+    font-size: small;
+    padding: 20px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}  
+.Addcatalog-container h3:hover{
+    border-radius:0px ; /* Thay đổi màu border khi focus */
+    background: #007bff;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: scroll 10s linear infinite;
+}  
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}

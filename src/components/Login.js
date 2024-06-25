@@ -42,8 +42,8 @@ const Login = () => {
     };
 
     return (
-        <div className="auth-container">
-            <h2>Login</h2>
+        <div className="Login-container">
+            <h2>Login 🥱😫😪</h2>
             <form onSubmit={handleLogin}>
                 <input
                     type="email"
@@ -53,7 +53,7 @@ const Login = () => {
                 />
                 <input
                     type="password"
-                    placeholder="Password"
+                    placeholder="Nhập đúng mật khẩu để không sai"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />

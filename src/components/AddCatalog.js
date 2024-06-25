@@ -3,6 +3,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
+import '../css/AddCatalog.css'; 
 
 const AddCatalog = () => {
     const [catalogName, setCatalogName] = useState("");
@@ -24,9 +25,9 @@ const AddCatalog = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '25%' }}>
-                <h3 className="w3-bar-item">Admin</h3>
+        <div className="Addcatalog-container">
+            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '13%' }}>
+                <h3 className="w3-bar-item">Doanh nghiệp</h3>
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/addproduct" className="w3-bar-item w3-button">AddProduct</Link>
                 <Link to="/addcatalog" className="w3-bar-item w3-button">AddCatalog</Link>
@@ -44,6 +45,7 @@ const AddCatalog = () => {
                 <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
+            <h3>Ngủ ngon🥱😴😴</h3>
         </div>
     );
 };

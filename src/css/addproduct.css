@@ -1,30 +1,124 @@
-.addproduct-container {
-    margin: 20px;
+/* Sidebar styling */
+.w3-sidebar {
+    width: 13%;
+    position: fixed; /* Sidebar fixed position */
+    height: auto; /* Full height */
+    background-color: #f0f0f0;
+    overflow: auto; /* Scrollable if needed */
+}
+
+/* Sidebar title styling */
+.w3-sidebar h3 {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+    border-radius: 15px;
+}
+
+/* Sidebar item styling */
+.w3-sidebar .w3-bar-item {
+    padding: 8px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* Container for the main content */
+.Addproducts-container {
+    margin-left: 13%; /* Adjusted to match sidebar width */
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
 }
 
-.addproduct-container h2 {
+/* Header for the add product page */
+.Addproducts-container h2 {
     margin-bottom: 20px;
+    background: #007bff;
+    border-radius: 16px;
+}
+.Addproducts-container h3 {
+    margin-bottom: 20px;
+    background: #007bff;
+    border-radius: 16px;
+    color: #333;
+}
+.Addproducts-container .checkbox label {
+    display: block;
+    margin-bottom: 8px;
+    transition: color 1s; /* Hiệu ứng transition */
 }
 
-.addproduct-container form input,
-.addproduct-container form textarea {
+/* Thay đổi màu chữ khi hover */
+.Addproducts-container .checkbox label:hover {
+    color: #007bff;
+}
+
+/* Form styling */
+.Addproducts-container form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Input field styling */
+.Addproducts-container input[type="text"],
+.Addproducts-container textarea {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-.addproduct-container form button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+/* MultiSelect component styling */
+.Addproducts-container .react-multi-select-component {
+    margin-bottom: 15px;
 }
-.auth-container .checkbox {
-    margin-bottom: 10px;
-    display: block; 
+
+/* Checkbox styling */
+.Addproducts-container .checkbox {
+    margin-bottom: 15px;
+}
+
+/* Checkbox label styling */
+.Addproducts-container .checkbox label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Button styling */
+.Addproducts-container button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Button hover effect */
+.Addproducts-container button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Message paragraph styling */
+.Addproducts-container p {
+    margin-top: 15px;
+    font-style: italic;
+}
+.Addproducts-container input[type="text"]:focus,
+.Addproducts-container textarea:focus {
+    border-color: #007bff; /* Thay đổi màu border khi focus */
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Shadow khi focus */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Hiệu ứng transition */
+}
+.Addproducts-container button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s; /* Chỉnh sửa thêm transform */
 }

@@ -1,4 +1,4 @@
-.auth-container {
+.Login-container {
     max-width: 800px;
     margin: 100px auto;
     padding: 20px;
@@ -7,24 +7,37 @@
     text-align: center;
 }
 
-.auth-container h2 {
+
+
+.Login-container h2 {
     margin-bottom: 20px;
+    background: #007bff;
+    border-radius: 15px;
+    color: #fffefe;
+ 
+}
+.Login-container h2:hover {
+    margin-bottom: 20px;
+    background: #1c5ca0;
+    border-radius: 20px;
+    animation: shake 0.8s ease-in-out;
 }
 
-.auth-container form {
+.Login-container form {
     display: flex;
     flex-direction: column;
 }
 
-.auth-container input {
+.Login-container input {
     margin-bottom: 10px;
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+    
 }
 
-.auth-container button {
+.Login-container button {
     padding: 10px 20px;
     font-size: 1rem;
     background-color: #007bff;
@@ -32,30 +45,60 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-align: center;
     margin-top: 10px;
+    border-radius: 15px;
+    animation: moveLeftRight 0.7s infinite alternate;
+
 }
 
-.auth-container button:hover {
+.Login-container button:hover {
     background-color: #0056b3;
 }
 
-.auth-container .btn-google {
+.Login-container .btn-google {
     background-color: #db4437;
 }
 
-.auth-container .btn-google:hover {
+.Login-container .btn-google:hover {
     background-color: #c23321;
 }
 
-.auth-container p {
+.Login-container p {
     margin-top: 15px;
 }
 
-.auth-container .error-message {
+.Login-container .error-message {
     color: red;
     margin-top: 10px;
 }
 
-.auth-container .checkbox {
+.Login-container .checkbox {
     margin-bottom: 10px;
+}
+
+@keyframes moveLeftRight {
+    0%, 100% {
+        transform: translateX(-15px);
+    }
+    50% {
+        transform: translateX(20px); /* Hiệu ứng qua lại */
+    }
+}
+@keyframes shake {
+    60%, 90% {
+        transform: translateX(-1px);
+    }
+    20%, 80% {
+        transform: translateX(2px);
+    }
+    30%, 50%, 70% {
+        transform: translateX(-4px);
+    }
+    40%, 60% {
+        transform: translateX(4px);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }

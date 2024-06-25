@@ -1,0 +1,58 @@
+.product-info-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 20px;
+}
+.TTSP{
+    
+
+    h2{
+        
+        
+        text-align: center;
+        background: #b49c9c;
+        border-radius: 14px;
+        
+
+    }
+    h3 {
+        padding-right: 200PX;
+        float: left;
+        margin: 5%;
+    }
+         .video{
+            width: 270px;
+            height: 500px;
+            margin-right: 20px;
+            padding-top: 10px;
+            height: auto;
+             float: left;
+             
+             align-items: center;
+         } 
+    }
+    a{
+        width: 30%;
+        text-align: left;
+    }
+   p{
+    margin: 20px;
+    text-align: left;
+   }
+        
+    img {
+    display: inline-block;
+    max-width: 100%; 
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: #a51f1f;
+}
+    
+    
+    
+

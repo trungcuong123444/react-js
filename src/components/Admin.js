@@ -50,7 +50,7 @@ const Admin = () => {
     return (
         <div className="admin-container">
             {/* Sidebar */}
-            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '25%' }}>
+            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '13%' }}>
                 <h3 className="w3-bar-item">Admin</h3>
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
