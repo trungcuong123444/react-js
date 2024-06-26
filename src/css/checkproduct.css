@@ -5,10 +5,11 @@
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+.auth-container .Checkproducts-container h2{
+    margin-left: 14%;
 
-.checkproduct-container h2 {
-    margin-bottom: 20px;
 }
+
 
 .checkproduct-container img {
     max-width: 100%;

@@ -50,12 +50,11 @@ const CheckProduct = () => {
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
-                <Link to="/updateproduct" className="w3-bar-item w3-button">UpdateProduct</Link>
-                <a href="#" className="w3-bar-item w3-button">Phân Quyền</a>
-            </div>
+
+            </div>  
 
             {/* Main Content */}
-            <div>
+            <div className="Checkproducts-container">
                 <h2>Check Products</h2>
                 <ul>
                     {products.filter(product => product.status === "pending").map(product => (

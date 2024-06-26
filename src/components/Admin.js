@@ -56,18 +56,17 @@ const Admin = () => {
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
                 <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
-                <a href="#" className="w3-bar-item w3-button">Phân Quyền</a>
+             
                 
                 
             </div>
         
             {/* Admin Content */}
             <div className="admin-content">
-                <h2>Admin Dashboard</h2>
-
+                <h2>Admin Dashboard </h2>
+                <h2>User List </h2>
                 {/* User List Section */}
                 <div className="admin-section">
-                    <h3>User List</h3>
                     <ul>
                         {users.map((user) => (
                             <li key={user.id}>

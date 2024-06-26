@@ -2,11 +2,14 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    margin-left: 200px;
 }
 
 .admin-container h2 {
     text-align: center;
     margin-bottom: 20px;
+    margin-left: 25%;
+    
 }
 
 .admin-actions {
@@ -82,7 +85,7 @@
 }
 
 .admin-content {
-    margin-left: 250px; /* Adjust this to leave space for the sidebar */
+    margin-left: 25px; /* Adjust this to leave space for the sidebar */
     padding: 20px;
 }
 
@@ -125,4 +128,22 @@
 
 .w3-sidebar a:hover {
     background-color: #ccc; /* Màu nền khi hover */
+}
+.admin-section {
+    float: left;
+    ul{
+        float: left;
+        width: 1200px
+        }
+    li{
+        float: left;
+        background: #d9dee2;
+        border-radius: 22px;
+        margin: 1%;
+        p{
+            
+            color:black ;
+        }
+    }
+
 }

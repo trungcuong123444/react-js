@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import "../css/register.css";
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -36,7 +37,7 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-container">
+        <div className="register-container">
             <h2>Register</h2>
             <form onSubmit={handleRegister}>
                 <input

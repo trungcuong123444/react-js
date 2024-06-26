@@ -110,7 +110,7 @@
 .Addproducts-container input[type="text"]:focus,
 .Addproducts-container textarea:focus {
     border-color: #007bff; /* Thay đổi màu border khi focus */
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Shadow khi focus */
+    box-shadow: 0 0 35px rgba(243, 59, 53, 0.5); /* Shadow khi focus */
     transition: border-color 0.3s, box-shadow 0.3s; /* Hiệu ứng transition */
 }
 .Addproducts-container button[type="submit"] {

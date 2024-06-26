@@ -1,6 +1,6 @@
 /* src/css/register.css */
 
-.auth-container {
+.register-container {
     max-width: 400px;
     margin: 100px auto;
     padding: 20px;
@@ -9,23 +9,24 @@
     text-align: center;
 }
 
-.auth-container h2 {
+.register-container h2 {
     margin-bottom: 20px;
+    background: #007bff;
 }
 
-.auth-container form {
+.register-container form {
     display: flex;
     flex-direction: column;
 }
 
-.auth-container input {
+.register-container input {
     margin-bottom: 10px;
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ccc;
 }
 
-.auth-container button {
+.register-container button {
     padding: 10px 20px;
     font-size: 1rem;
     background-color: #007bff;
@@ -34,11 +35,11 @@
     cursor: pointer;
 }
 
-.auth-container button:hover {
+.register-container button:hover {
     background-color: #0056b3;
 }
 
-.auth-container p {
+.register-container p {
     color: red;
     margin-top: 10px;
 }
