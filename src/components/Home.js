@@ -277,13 +277,13 @@ const Home = () => {
         <div className="breadcrumb-container">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Active</a>
+                        <a class="navlink-active" href="#">Active</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">popular</a>
+                        <a class="nav-lxdink-popular" href="#">popular</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">New</a>
+                        <a class="nav-lidnk-new" href="#">New</a>
                     </li>
                     <button onClick={() => setShowFilters(!showFilters)}>Filter</button> {}
                         {showFilters && (
