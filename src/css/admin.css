@@ -114,10 +114,11 @@
 }
 
 .w3-sidebar a {
+    width: 100%;
     padding: 10px; /* Khoảng cách cho mỗi liên kết */
     display: block; /* Hiển thị các liên kết làm block để dễ bố trí */
     text-decoration: none; /* Không gạch chân cho các liên kết */
-    color: rgb(172, 113, 113); /* Màu chữ của các liên kết */
+    color: rgb(175, 136, 136); /* Màu chữ của các liên kết */
     transition: background-color 0.3s;
     border-radius: 14px;
 }

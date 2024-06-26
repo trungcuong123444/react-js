@@ -34,12 +34,12 @@ const ProductInformation = () => {
     return (
         <div className='Tong'>
         <div className='TTSP'>
-            
-            <h3><strong>Name:</strong> {name}</h3>
+            <h2><strong>Name:</strong> {name}</h2>
+
+            <h3></h3>
             <div className='Video'>
-                <iframe src="https://www.youtube.com/embed/ebKZBJSWR7E?si=UIoNByCTr7qavQ0B" title="YouTube video player" ></iframe>
+                <iframe src="https://www.youtube.com/embed/Y756MSD4C74?si=_tyY13znF8g3apP7" title="YouTube video player" ></iframe>
             </div>
-            
             <p  ><strong>Description:</strong> {description}  </p>
             <p><strong>Catalogs:</strong> {catalogs ? catalogs.join(', ') : 'No catalogs'}</p>
             <p><strong>Image URL:<br></br></strong> <img src={imageUrl} alt={name} style={{ maxWidth: '200px' }} /></p>

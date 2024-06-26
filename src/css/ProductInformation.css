@@ -20,7 +20,7 @@
 
     }
     h3 {
-        padding-right: 200PX;
+        padding-right: 30%;
         float: left;
         margin: 5%;
     }
@@ -41,7 +41,7 @@
     }
    p{
     margin: 20px;
-    text-align: left;
+    text-align: center;
    }
         
     img {
@@ -54,5 +54,5 @@
 }
     
     
-    
+
 
