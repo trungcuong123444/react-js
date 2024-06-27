@@ -1,7 +1,7 @@
 /* Overall container for the product list */
 .listproduct-container {
     width: 80%; /* Adjust width as needed */
-    margin: 0 auto; /* Center the container horizontally */
+    /* Center the container horizontally */
     padding: 20px; /* Add some padding for spacing */
     border: 1px solid #ddd; /* Optional border for visual separation */
     border-radius: 5px; /* Optional rounded corners */
@@ -15,7 +15,8 @@
   
   /* Container for individual product items */
   .product-list {
-    display: flex; /* Arrange products in a row */
+    display: flex; 
+    margin-left: 13%;/* Arrange products in a row */
     flex-wrap: wrap; /* Allow items to wrap onto multiple lines if needed */
     justify-content: space-between; /* Distribute products evenly */
     /* Optional: Add some padding/margin for spacing between products */
@@ -26,6 +27,7 @@
     width: calc(33% - 20px); /* Set width based on desired number of products per row */
     /* Adjust margin for spacing between products */
     margin-bottom: 20px;
+    margin-left: 200px;
     padding: 10px;
     border: 1px solid #eee; /* Optional border */
     border-radius: 5px; /* Optional rounded corners */

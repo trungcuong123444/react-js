@@ -39,13 +39,6 @@ const Admin = () => {
         }
     };
 
-    const handleCheckProduct = () => {
-        navigate("/checkproduct");
-    };
-
-    const handleNavigateToListProduct = () => {
-        navigate("/listproduct");
-    };
 
     return (
         <div className="admin-container">
@@ -55,6 +48,7 @@ const Admin = () => {
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
+                <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
                 <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
              
                 
@@ -88,10 +82,6 @@ const Admin = () => {
                     <p>Total users: {users.length}</p>
                     {/* Add more statistical information as needed */}
                 </div>
-
-                {/* Navigation Buttons */}
-                <button onClick={handleCheckProduct}>Go to Check Product</button>
-                <button onClick={handleNavigateToListProduct}>List Product</button>
             </div>
         </div>
     );

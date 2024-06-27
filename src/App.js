@@ -6,7 +6,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AddProduct from "./components/AddProduct";
 import CheckProduct from "./components/CheckProduct";
-import ListProduct from "./components/ListProduct";
+import {ListProduct} from "./components/ListProduct";
 import UserProduct from "./components/UserProduct";
 import UpdateProduct from "./components/UpdateProduct";
 import AddCatalog from "./components/AddCatalog";
@@ -15,6 +15,11 @@ import AIagents from './components/AIagents';
 import AItutorials from './components/AItutorials';
 import AIInnovations from './components/AIInnovations';
 import ProductInformation from './components/ProductInformation';
+import ListCatalog from './components/ListCatalog';
+
+
+
+
 
 function App() {
   return (
@@ -31,7 +36,7 @@ function MainContent() {
 
   useEffect(() => {
     const footer = document.getElementById('main-footer');
-    if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/checkproduct') || location.pathname.startsWith('/listproduct') || location.pathname.startsWith('/updateproduct') || location.pathname.startsWith('/userproduct') || location.pathname.startsWith('/addproduct') || location.pathname.startsWith('/addcatalog')) {
+    if (location.pathname.startsWith('/admin')|| location.pathname.startsWith('/listcatalog') || location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/checkproduct') || location.pathname.startsWith('/listproduct') || location.pathname.startsWith('/updateproduct') || location.pathname.startsWith('/userproduct') || location.pathname.startsWith('/addproduct') || location.pathname.startsWith('/addcatalog')) {
       if (footer) footer.style.display = 'none';
     } else {
       if (footer) footer.style.display = 'block';
@@ -56,6 +61,7 @@ function MainContent() {
         <Route path="/aitutorials" element={<AItutorials />} />
         <Route path="/aiinnovations" element={<AIInnovations />} />
         <Route path="/productinfor/:id" element={<ProductInformation />} />
+        <Route path="/listcatalog" element={<ListCatalog />} />
       </Routes>
     </>
   );

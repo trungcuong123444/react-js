@@ -1,0 +1,39 @@
+.catalog-list-container {
+    width: 80%;
+    margin: auto;
+    background: rgb(74, 161, 196);
+}
+
+
+.catalog-table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+}
+
+.catalog-table th, .catalog-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.catalog-table th {
+    background-color: #f2f2f2;
+}
+
+.catalog-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.catalog-table button {
+    padding: 5px 10px;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.catalog-table button:hover {
+    background-color: darkred;
+}

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import "../css/listproduct.css";
 import { Link } from "react-router-dom";
 
-const ListProduct = () => {
+export const ListProduct = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -24,7 +23,8 @@ const ListProduct = () => {
                 <Link to="/" className="w3-bar-item w3-button">Home</Link>
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
-             
+                <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
+                <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
             </div>
             <h2>List of Products</h2>
             <div className="product-list">
@@ -42,5 +42,3 @@ const ListProduct = () => {
         </div>
     );
 };
-
-export default ListProduct;

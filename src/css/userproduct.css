@@ -55,8 +55,8 @@
 
 /* Image styling */
 .auth-container li img {
-    width: 70%;;
-    height: auto;
+    width: 50%;
+    height: 50%;
     margin-bottom: 10px;
     border-radius: 5px;
 }
