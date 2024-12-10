@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig"; // Ensure you have storage exported from firebaseConfig
+import { db, storage, auth } from "../firebaseConfig"; // Ensure firebaseConfig exports db, storage, and auth
 import { useNavigate } from "react-router-dom";
-import { MultiSelect } from 'react-multi-select-component';
-import '../css/addproduct.css';
+import { MultiSelect } from "react-multi-select-component";
+import "../css/addproduct.css";
 import { Link } from "react-router-dom";
 
 const AddProduct = () => {
@@ -26,23 +26,44 @@ const AddProduct = () => {
         browserExtension: false,
     });
     const navigate = useNavigate();
-    
+
+    // Fetch product categories from Firestore
     useEffect(() => {
         const fetchCatalogs = async () => {
-            const querySnapshot = await getDocs(collection(db, "catalogs"));
-            const catalogsList = querySnapshot.docs.map(doc => ({ label: doc.data().name, value: doc.id }));
-            setCatalogs(catalogsList);
+            try {
+                const querySnapshot = await getDocs(collection(db, "catalogs"));
+                const catalogsList = querySnapshot.docs.map(doc => ({
+                    label: doc.data().name,
+                    value: doc.id,
+                }));
+                setCatalogs(catalogsList);
+            } catch (error) {
+                console.error("Error fetching catalogs:", error);
+            }
         };
         fetchCatalogs();
     }, []);
 
-
+    // Upload image to Firebase Storage and get the URL
     const handleImageUpload = async (file) => {
-        const storageRef = ref(storage, `images/${file.name}`);
-        await uploadBytes(storageRef, file);
-        return await getDownloadURL(storageRef);
+        if (!file) {
+            console.error("No file selected");
+            return "";
+        }
+
+        try {
+            const storageRef = ref(storage, `images/${file.name}`);
+            const uploadResult = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(uploadResult.ref);
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+            setMessage("Error uploading image. Please try again.");
+            return "";
+        }
     };
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -50,39 +71,42 @@ const AddProduct = () => {
             let imageUrl = "";
             if (image) {
                 imageUrl = await handleImageUpload(image);
+                if (!imageUrl) {
+                    setMessage("Error uploading image. Please try again.");
+                    return;
+                }
             }
 
             const user = auth.currentUser;
             if (user) {
-                const isAdmin = user.email === "admin@gmail.com" && user.password === "123456"; // This line assumes you have access to the password directly which is not recommended
-
                 await addDoc(collection(db, "products"), {
                     name,
                     description,
-                    catalogs: selectedCatalogs.map(cat => cat.value), 
+                    catalogs: selectedCatalogs.map(cat => cat.value),
                     imageUrl,
                     tags: tags.split(","),
                     link,
-                    status: "pending", // Initial status
+                    status: "pending",
                     createdAt: new Date(),
-                    uid: user.uid, // Save the user's UID
-                    features: {
-                        waitlist: features.waitlist,
-                        openSource: features.openSource,
-                        mobileApp: features.mobileApp,
-                        discordCommunity: features.discordCommunity,
-                        api: features.api,
-                        noSignupRequired: features.noSignupRequired,
-                        browserExtension: features.browserExtension,
-                    },
+                    uid: user.uid,
+                    features,
                 });
 
-                setMessage("Bạn đã đề nghị thêm sản phẩm thành công.");
+                const now = new Date();
+                const formattedTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+                setMessage(`Product added successfully at ${formattedTime}.`);
+                setName("");
+                setDescription("");
+                setSelectedCatalogs([]);
+                setImage(null);
+                setTags("");
+                setLink("");
             } else {
-                setMessage("User is not logged in");
+                setMessage("User is not logged in.");
             }
         } catch (error) {
-            setMessage("Đã có lỗi xảy ra. Vui lòng thử lại.");
+            console.error("Error adding product:", error);
+            setMessage("An error occurred. Please try again.");
         }
     };
 
@@ -102,103 +126,63 @@ const AddProduct = () => {
                 <Link to="/addcatalog" className="w3-bar-item w3-button">AddCatalog</Link>
                 <Link to="/userproduct" className="w3-bar-item w3-button">UserProduct</Link>
             </div>
-            <h2>Add Product</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <textarea
-                    placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                />
-                <MultiSelect
-                    options={catalogs}
-                    value={selectedCatalogs}
-                    onChange={setSelectedCatalogs}
-                    labelledBy="Select Catalogs"
-                    hasSelectAll={false}
-                />
-                <input
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    onChange={(e) => setImage(e.target.files[0])}
-                />
-                <input
-                    type="text"
-                    placeholder="Tags (comma separated)"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Product Link"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    required
-                />
-            <div className="checkbox">
-                <div>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.waitlist}
-                            onChange={() => handleFeatureChange('waitlist')}
-                        /> Waitlist
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.openSource}
-                            onChange={() => handleFeatureChange('openSource')}
-                        /> Open Source
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.mobileApp}
-                            onChange={() => handleFeatureChange('mobileApp')}
-                        /> Mobile App
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.discordCommunity}
-                            onChange={() => handleFeatureChange('discordCommunity')}
-                        /> Discord Community
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.api}
-                            onChange={() => handleFeatureChange('api')}
-                        /> API
-                    </label>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.noSignupRequired}
-                            onChange={() => handleFeatureChange('noSignupRequired')}
-                        /> No Signup Required
-                    </label>
+            <div className="add-product-form">
+                <h2>Add Product</h2>
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                    <textarea
+                        placeholder="Description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                    />
+                    <MultiSelect
+                        options={catalogs}
+                        value={selectedCatalogs}
+                        onChange={setSelectedCatalogs}
+                        labelledBy="Select Catalogs"
+                        hasSelectAll={false}
+                    />
+                    <input
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        onChange={(e) => setImage(e.target.files[0])}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Tags (comma separated)"
+                        value={tags}
+                        onChange={(e) => setTags(e.target.value)}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Product Link"
+                        value={link}
+                        onChange={(e) => setLink(e.target.value)}
+                        required
+                    />
+                    <div className="checkbox">
+                        {Object.keys(features).map(feature => (
+                            <label key={feature}>
+                                <input
+                                    type="checkbox"
+                                    checked={features[feature]}
+                                    onChange={() => handleFeatureChange(feature)}
+                                />{" "}
+                                {feature}
+                            </label>
+                        ))}
+                    </div>
+                    <button type="submit">Create</button>
+                </form>
+                {message && <p>{message}</p>}
             </div>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={features.browserExtension}
-                            onChange={() => handleFeatureChange('browserExtension')}
-                        /> Browser Extension
-                    </label>
-                </div>               
-                <button type="submit">Create</button>
-            </form>
-            {message && <p>{message}</p>}
-
         </div>
     );
 };

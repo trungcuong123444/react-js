@@ -54,7 +54,7 @@ const ListCatalog = () => {
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
                 <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
-                <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
+                <Link to="/login" className="w3-bar-item w3-button">Đăng xuất</Link>
             </div>  
             <h2>Catalog List</h2>
             {message && <p>{message}</p>}

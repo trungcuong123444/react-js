@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link,products } from "react-router-dom";
 import "../css/admin.css"; // Import CSS for Admin styles
 
 const Admin = () => {
@@ -43,31 +43,30 @@ const Admin = () => {
     return (
         <div className="admin-container">
             {/* Sidebar */}
-            <div className="w3-sidebar w3-light-grey w3-bar-block" style={{ width: '13%' }}>
-                <h3 className="w3-bar-item">Admin</h3>
-                <Link to="/" className="w3-bar-item w3-button">Home</Link>
-                <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
-                <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
-                <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
-                <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
-             
-                
-                
+            <div className="w3-sidebar">
+                <h3>Admin</h3>
+                <Link to="/" className="w3-bar-item">Home</Link>
+                <Link to="/checkproduct" className="w3-bar-item">CheckProduct</Link>
+                <Link to="/listproduct" className="w3-bar-item">ListProduct</Link>
+                <Link to="/listcatalog" className="w3-bar-item">ListCatalog</Link>
+                <Link to="/history" className="w3-bar-item">Lịch sử bài đăng</Link>
+                <Link to="/login" className="w3-bar-item">Đăng xuất</Link>
             </div>
-        
+    
             {/* Admin Content */}
             <div className="admin-content">
-                <h2>Admin Dashboard </h2>
-                <h2>User List </h2>
+                <h2>Admin </h2>
+                <h2>quản lý người dùng </h2>
+                
                 {/* User List Section */}
                 <div className="admin-section">
                     <ul>
                         {users.map((user) => (
                             <li key={user.id}>
-                                <p>ID: {user.id}</p>
-                                <p>Email: {user.email}</p>
-                                <p>Name: {user.name}</p>
-                                <p>Role: {user.role}</p>
+                                
+                                <p><strong>Email:</strong> {user.email}</p>
+                                <p><strong>Name:</strong> {user.name}</p>
+                                <p><strong>Role:</strong> {user.role || "User"}</p>
                                 {!user.role && (
                                     <button onClick={() => handleMakeAdmin(user.id)}>Make Admin</button>
                                 )}
@@ -75,16 +74,17 @@ const Admin = () => {
                         ))}
                     </ul>
                 </div>
-
+    
                 {/* Statistics Section */}
                 <div className="admin-section">
                     <h3>Statistics</h3>
-                    <p>Total users: {users.length}</p>
-                    {/* Add more statistical information as needed */}
+                    <p><strong>Total users:</strong> {users.length}</p>
+                    {/* Add more statistics if necessary */}
                 </div>
             </div>
         </div>
     );
+    
 };
 
 export default Admin;

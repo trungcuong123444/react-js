@@ -23,13 +23,15 @@ const CheckProduct = () => {
     const handleApprove = async (productId) => {
         try {
             const productRef = doc(db, "products", productId);
-            await updateDoc(productRef, { status: "approved" });
+            const approvedAt = new Date(); // Lấy thời gian hiện tại
+            await updateDoc(productRef, { status: "approved", approvedAt });
             setProducts(products.filter(product => product.id !== productId));
             console.log("Product approved successfully.");
         } catch (error) {
             console.error("Error approving product:", error);
         }
     };
+    
 
     const handleReject = async (productId) => {
         try {
@@ -51,7 +53,7 @@ const CheckProduct = () => {
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
                 <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
-                <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
+                <Link to="/login" className="w3-bar-item w3-button">đăng xuất</Link>
             </div>  
 
             {/* Main Content */}

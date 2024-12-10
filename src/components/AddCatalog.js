@@ -45,7 +45,7 @@ const AddCatalog = () => {
                 <button type="submit">Create</button>
             </form>
             {message && <p>{message}</p>}
-            <h3>Ngủ ngon🥱😴😴</h3>
+           
         </div>
     );
 };

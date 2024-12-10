@@ -1,0 +1,40 @@
+.dangnhap-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+    position: relative; /* Quan trọng để cho phép position tuyệt đối của nút */
+}
+
+.dangnhap-container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.dangnhap-container p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.login-btn {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    position: absolute; /* Vị trí tuyệt đối để có thể di chuyển */
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #ff0000;   /* Thay đổi màu nền khi hover */
+}
+
+.login-btn:disabled {
+    cursor: not-allowed;   /* Khi nút bị vô hiệu hóa, con trỏ chuột sẽ không thể nhấn */
+    opacity: 0.6;           /* Làm mờ nút khi không thể nhấn */
+}

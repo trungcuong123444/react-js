@@ -24,20 +24,23 @@ export const ListProduct = () => {
                 <Link to="/checkproduct" className="w3-bar-item w3-button">CheckProduct</Link>
                 <Link to="/listproduct" className="w3-bar-item w3-button">ListProduct</Link>
                 <Link to="/listcatalog" className="w3-bar-item w3-button">ListCatalog</Link>
-                <Link to="/login" className="w3-bar-item w3-button">Làm lại cuộc đời</Link>
+                <Link to="/login" className="w3-bar-item w3-button">đăng xuất </Link>
             </div>
-            <h2>List of Products</h2>
-            <div className="product-list">
-                {products.map((product, index) => (
-                    <div key={index} className="product">
-                        <img src={product.image} alt={product.name} />
-                        <h3>{product.name}</h3>
-                        <p>{product.description}</p>
-                        <p><strong>Category:</strong> {product.category}</p>
-                        <p><strong>Tags:</strong> {product.tags.join(", ")}</p>
-                        <a href={product.link} target="_blank" rel="noopener noreferrer">View Product</a>
-                    </div>
-                ))}
+            <div style={{ marginLeft: '15%' }}>
+                <h2>List of Products</h2>
+                <p>Tổng số bài đăng: {products.length}</p> {/* Hiển thị tổng số bài đăng */}
+                <div className="product-list">
+                    {products.map((product, index) => (
+                        <div key={index} className="product">
+                            <img src={product.image} alt={product.name} />
+                            <h3>{product.name}</h3>
+                            <p>{product.description}</p>
+                            <p><strong>Category:</strong> {product.category}</p>
+                            <p><strong>Tags:</strong> {product.tags.join(", ")}</p>
+                            <a href={product.link} target="_blank" rel="noopener noreferrer">View Product</a>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

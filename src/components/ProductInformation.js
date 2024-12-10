@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import "../css/ProductInformation.css";
+
 const ProductInformation = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -33,25 +35,24 @@ const ProductInformation = () => {
 
     return (
         <div className='Tong'>
-        <div className='TTSP'>
-            <h2><strong>Name:</strong> {name}</h2>
+            <div className='TTSP'>
+                
+                <h2><strong>Name:</strong> {name}</h2>
 
-            <h3></h3>
-            <div className='Video'>
-                <iframe src="https://www.youtube.com/embed/Y756MSD4C74?si=_tyY13znF8g3apP7" title="YouTube video player" ></iframe>
+                <div className='Video'>
+                    <iframe src="https://www.youtube.com/embed/Y756MSD4C74?si=_tyY13znF8g3apP7" title="YouTube video player" ></iframe>
+                </div>
+                <p><strong>Description:</strong> {description}</p>
+                <p><strong>Catalogs:</strong> {catalogs ? catalogs.join(', ') : 'No catalogs'}</p>
+                <p><strong>Image URL:<br></br></strong> <img src={imageUrl} alt={name} style={{ maxWidth: '200px' }} /></p>
+                <p><strong>Tags:</strong> {tags ? tags.join(', ') : 'No tags'}</p>
+                <p><strong>Link:</strong> <a href={link} target="_blank" rel="noopener noreferrer">{link}</a></p>
+                <p><strong>Status:</strong> {status}</p>
+                <p><strong>Created At:</strong> {createdAt.toDate().toLocaleDateString()}</p>
+                <p><strong>UID:</strong> {uid}</p>
+                <button className="back-button" onClick={() => navigate(-1)}>Back</button> {/* Nút Back */}
             </div>
-            <p  ><strong>Description:</strong> {description}  </p>
-            <p><strong>Catalogs:</strong> {catalogs ? catalogs.join(', ') : 'No catalogs'}</p>
-            <p><strong>Image URL:<br></br></strong> <img src={imageUrl} alt={name} style={{ maxWidth: '200px' }} /></p>
-            <p><strong>Tags:</strong> {tags ? tags.join(', ') : 'No tags'}</p>
-            <p><strong>Link:</strong> <a href={link} target="_blank" rel="noopener noreferrer">{link}</a></p>
-            <p><strong>Status:</strong> {status}</p>
-            <p><strong>Created At:</strong> {createdAt.toDate().toLocaleDateString()}</p>
-            <p><strong>UID:</strong> {uid}</p>
         </div>
-        
-        </div>
-        
     );
 };
 

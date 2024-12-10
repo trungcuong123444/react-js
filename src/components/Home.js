@@ -192,6 +192,7 @@ const Home = () => {
                                     <button onClick={toggleDropdown}>More</button>
                                     {dropdownOpen && (
                                         <ul className="dropdown-menu">
+                                        <li><button onClick={() => navigate("/pendingProducts")}>sản phẩm chờ duyệt</button></li>
                                             <li><button onClick={() => navigate("/addproduct")}>Add Product</button></li>
                                             <li><button onClick={() => navigate("/addcatalog")}>Add Catalog</button></li>
                                             <li><button onClick={() => navigate("/userproduct")}>List Products</button></li>

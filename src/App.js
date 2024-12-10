@@ -16,6 +16,10 @@ import AItutorials from './components/AItutorials';
 import AIInnovations from './components/AIInnovations';
 import ProductInformation from './components/ProductInformation';
 import ListCatalog from './components/ListCatalog';
+import History from './components/History';
+import PendingPosts from './components/PendingPosts';
+import PendingProducts from './components/PendingProducts';
+import Dangnhaptroll from './components/Dangnhaptroll';
 
 
 
@@ -46,6 +50,10 @@ function MainContent() {
   return (
     <>
       <Routes>
+      <Route path="/dangnhaptroll" element={<Dangnhaptroll />} />
+      <Route path="/pendingposts" element={<PendingPosts />} />
+      <Route path="/pendingproducts" element={<PendingProducts />} />
+         <Route path="/history" element={<History />} />
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/addcatalog" element={<AddCatalog />} />
